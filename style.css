@@ -2,20 +2,20 @@
    CSS 変数
    =========================== */
 :root {
-  --color-primary:    #e879b0;
-  --color-secondary:  #7c3aed;
-  --color-accent:     #f5a623;
-  --color-bg:         #0f0b1e;
-  --color-surface:    #1e1a35;
-  --color-border:     #2e2a50;
-  --color-text:       #f0ecff;
-  --color-text-muted: #9d96c0;
+  --color-primary:    #ff5dae;
+  --color-secondary:  #c840f0;
+  --color-accent:     #ffcc00;
+  --color-bg:         #160828;
+  --color-surface:    #231040;
+  --color-border:     #3e1a58;
+  --color-text:       #fff3ff;
+  --color-text-muted: #cc90c0;
   --font-heading:     'Zen Maru Gothic', sans-serif;
   --font-body:        'Noto Sans JP', sans-serif;
   --radius:           12px;
   --radius-sm:        8px;
   --transition:       0.25s ease;
-  --shadow:           0 4px 24px rgba(0,0,0,0.4);
+  --shadow:           0 4px 24px rgba(0,0,0,0.5);
 }
 
 /* ===========================
@@ -201,7 +201,8 @@ ul  { list-style: none; }
   text-align:      center;
   overflow:        hidden;
   padding:         80px 20px 60px;
-  background:      radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.3) 0%, transparent 60%),
+  background:      radial-gradient(ellipse at 50% -10%, rgba(255,93,174,0.35) 0%, rgba(200,64,240,0.15) 40%, transparent 70%),
+                   radial-gradient(ellipse at 80% 80%, rgba(255,204,0,0.08) 0%, transparent 50%),
                    var(--color-bg);
 }
 
@@ -214,7 +215,8 @@ ul  { list-style: none; }
 .particle {
   position:         absolute;
   border-radius:    50%;
-  background-color: #fff;
+  background-color: #ffcc00;
+  box-shadow:       0 0 4px rgba(255,204,0,0.6);
   animation:        twinkle var(--dur, 3s) ease-in-out infinite alternate;
 }
 
@@ -342,14 +344,14 @@ ul  { list-style: none; }
   font-size:     1rem;
   padding:       14px 32px;
   border-radius: 999px;
-  box-shadow:    0 6px 32px rgba(232,121,176,0.4);
+  box-shadow:    0 6px 32px rgba(255,93,174,0.5);
   transition:    transform var(--transition), box-shadow var(--transition);
   margin-bottom: 12px;
 }
 
 .btn-hero:hover {
   transform:  translateY(-2px);
-  box-shadow: 0 10px 40px rgba(232,121,176,0.6);
+  box-shadow: 0 10px 40px rgba(255,93,174,0.7);
 }
 
 .hero-platform-note {
@@ -421,27 +423,30 @@ ul  { list-style: none; }
 }
 
 .member-cards {
-  display:        flex;
-  flex-direction: column;
-  gap:            10px;
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   10px;
 }
 
 .member-card {
-  display:       flex;
-  align-items:   center;
-  gap:           12px;
-  padding:       10px 12px;
-  background:    rgba(255,255,255,0.03);
-  border-radius: var(--radius-sm);
-  border:        1px solid var(--color-border);
-  transition:    background var(--transition);
+  display:        flex;
+  align-items:    center;
+  gap:            12px;
+  padding:        10px 12px;
+  background:     rgba(255,255,255,0.03);
+  border-radius:  var(--radius-sm);
+  border:         1px solid var(--color-border);
+  transition:     all var(--transition);
+}
+.member-card:hover {
+  background:    rgba(255,93,174,0.08);
+  border-color:  var(--color-primary);
+  transform:     translateY(-2px);
 }
 
-.member-card:hover { background: rgba(232,121,176,0.08); }
-
 .member-avatar {
-  width:           44px;
-  height:          44px;
+  width:           72px;
+  height:          72px;
   flex-shrink:     0;
   border-radius:   50%;
   background:      linear-gradient(135deg, var(--color-primary), var(--color-secondary));
@@ -449,17 +454,23 @@ ul  { list-style: none; }
   align-items:     center;
   justify-content: center;
   font-weight:     700;
-  font-size:       1.1rem;
+  font-size:       1.3rem;
   color:           #fff;
   overflow:        hidden;
+  border:          2px solid var(--color-border);
+  box-shadow:      0 2px 12px rgba(255,93,174,0.25);
 }
 
-.member-avatar.has-photo { background: none; }
+.member-avatar.has-photo {
+  background:  none;
+  border-color: var(--color-primary);
+}
 .member-avatar.has-photo img {
-  width:      100%;
-  height:     100%;
-  object-fit: cover;
-  display:    block;
+  width:       100%;
+  height:      100%;
+  object-fit:  cover;
+  object-position: center top;
+  display:     block;
 }
 
 .member-info {
@@ -1091,7 +1102,7 @@ ul  { list-style: none; }
 .btn-primary {
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   color:      #fff;
-  box-shadow: 0 4px 20px rgba(232,121,176,0.3);
+  box-shadow: 0 4px 20px rgba(255,93,174,0.4);
 }
 
 .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -1362,6 +1373,8 @@ ul  { list-style: none; }
   .section { padding: 56px 0; }
 
   /* ナビ */
+  .member-cards { grid-template-columns: 1fr; }
+
   .nav-links {
     display:          none;
     position:         fixed;
@@ -1369,7 +1382,7 @@ ul  { list-style: none; }
     left:             0;
     right:            0;
     flex-direction:   column;
-    background-color: rgba(15,11,30,0.98);
+    background-color: rgba(22,8,40,0.98);
     padding:          16px;
     gap:              4px;
     border-bottom:    1px solid var(--color-border);
