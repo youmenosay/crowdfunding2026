@@ -9,7 +9,7 @@ window.YMS_CONFIG = {
 
   // 現在の支援総額
   currentAmount: 50000,
-  currentAmountUpdatedAt: "2026-05-02T04:27:31.075Z",
+  currentAmountUpdatedAt: "2026-05-02T04:30:39.249Z",
 
   // テーマ設定
   theme: {
