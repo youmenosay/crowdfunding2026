@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="youmenosayアニメ化プロジェクト。セルフプロデュースアイドルユニットyoumenosayの5周年に向けた「アニメ化」クラウドファンディングです。">
+  <title>youmenosay アニメ化プロジェクト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+  <script src="images-data.js"></script>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">youmenosay</a>
+    <button class="nav-burger" id="navBurger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">グループ紹介</a></li>
+      <li><a href="#project">プロジェクト</a></li>
+      <li><a href="#milestone">マイルストーン</a></li>
+      <li><a href="#rewards">リターン</a></li>
+      <li><a href="#schedule">スケジュール</a></li>
+      <li><a href="#support" class="nav-support-btn soreos-link">ソレオスで支援する</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero" class="hero">
+  <div class="hero-img-bg" id="heroImgBg"></div>
+  <div class="hero-particles" id="heroParticles"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">2027年 5周年記念プロジェクト</p>
+    <h1 class="hero-title">
+      <span>youmenosay</span>
+      <span id="heroTitleText">アニメ化プロジェクト</span>
+    </h1>
+    <p class="hero-lead" id="heroLeadText">
+      自分たちのアイドル活動を原作に「ノンフィクションでのアニメ化」を目指す<br>
+      セルフプロデュースアイドルユニット youmenosay が<br>
+      大きな夢への第一歩を踏み出します。
+    </p>
+    <div class="hero-goal-box">
+      <span class="hero-goal-label">最終目標金額</span>
+      <strong class="hero-goal-num" id="goalAmountDisplay">¥5,000,000</strong>
+    </div>
+    <a href="#" class="btn-hero soreos-link">
+      <span>ソレオスで支援する</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <p class="hero-platform-note">アニメイト運営 クラウドファンディング「ソレオス」</p>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <span>SCROLL</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">ABOUT</span>
+      <h2 class="section-ja">はじめに</h2>
+    </div>
+    <div class="about-grid fade-in">
+      <div class="about-main" id="aboutMainText">
+        <p>いつもyoumenosayの応援ありがとうございます！</p>
+        <p>私たちは<strong>「自分たちのアイドル活動を原作に『ノンフィクションでのアニメ化』を目指すセルフプロデュースアイドルユニット」</strong>として2022年3月より活動しています。</p>
+        <p>そんなyoumenosayは来年2027年で<strong>5周年</strong>を迎えます！ここまで活動の歩みを進めてこれたのも製作委員会（ファン名称）のみんなのおかげです。本当にありがとうございます！</p>
+        <p>youmenosayは現在5人組で活動しており、企画・ライブ制作・ブッキング・楽曲制作・デザイン・SNS運用など、すべての運営を自分たちで行っている<em>完全自給自足系アイドル</em>です。</p>
+        <p>そんな私達が掲げる「アニメ化」という夢は自分たちの力だけでは到底手の届かない夢のまた夢…。そのくらい大きな夢ではあるものの、ここまで製作委員会のみんなと手を取り合い歩いてきた集大成として、まずは私たちとみんなの力で「アニメ化」を叶えるための挑戦をしたいと考えています。</p>
+      </div>
+      <div class="members-box">
+        <h3>メンバー紹介</h3>
+        <div class="member-cards">
+          <div class="member-card">
+            <div class="member-avatar" data-member="kano">可</div>
+            <div class="member-info">
+              <span class="member-name">北郷可恩</span>
+              <span class="member-nick">きゃのち</span>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="member-avatar" data-member="sari">さ</div>
+            <div class="member-info">
+              <span class="member-name">雪乃さり</span>
+              <span class="member-nick">さりちゃん</span>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="member-avatar" data-member="reina">れ</div>
+            <div class="member-info">
+              <span class="member-name">雨宮れいな</span>
+              <span class="member-nick">れーにゃ</span>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="member-avatar" data-member="haru">は</div>
+            <div class="member-info">
+              <span class="member-name">ねむいのはる</span>
+              <span class="member-nick">ねむちゃん</span>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="member-avatar" data-member="yuka">優</div>
+            <div class="member-info">
+              <span class="member-name">陽葵優叶</span>
+              <span class="member-nick">ぺんざむ</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECT ===== -->
+<section id="project" class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">PROJECT</span>
+      <h2 class="section-ja">本プロジェクトで実現したいこと</h2>
+    </div>
+    <div class="project-content fade-in">
+      <div id="projectMainText">
+        <p>今回は「アニメ化」という大きな夢への第一歩として、<strong>「アニメ化したらこのアニメを観たいなぁ…」と思えるような2次元コンテンツ</strong>を様々な形で作成していきたいと考えています。</p>
+        <p>私達が目指す作品では、みんなが想像するキラキラとした王道のアイドルアニメではなく、いわゆる<strong>「お仕事アニメ」</strong>のような作品を作りたいと考えています。</p>
+        <p>コロナ禍、とあるアイドルオーディションで落選してしまった女の子3人で立ち上がったyoumenosay。事務所に所属せず、セルフプロデュースでデビューへ向けて準備し、メンバーチェンジ、無所属ならではの葛藤——この5年間の道のりは楽しいことばかりではありませんでした。</p>
+      </div>
+
+      <!-- プロジェクト説明画像（管理画面から追加） -->
+      <div class="proj-img-gallery" id="projectImageGallery" style="display:none"></div>
+
+      <div class="project-goals">
+        <h3>目標とする2次元コンテンツ</h3>
+        <div class="goal-cards">
+          <div class="goal-card">
+            <div class="goal-icon">🎬</div>
+            <h4>初のアニメーションMV制作</h4>
+            <p>最新曲「ノンストップドリーマー」でのアニメーションMVを予定。楽曲制作はMedansyさんが担当。</p>
+          </div>
+          <div class="goal-card">
+            <div class="goal-icon">📖</div>
+            <h4>4コマ漫画の制作</h4>
+            <p>youmenosayの日常や活動の裏側を4コマ漫画で描きます。</p>
+          </div>
+          <div class="goal-card">
+            <div class="goal-icon">🎙</div>
+            <h4>ボイスドラマ化</h4>
+            <p>メンバーの声でストーリーを届けるボイスドラマを制作します。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-box">
+        <h3>プロデューサーより</h3>
+        <div id="producerMessageText">
+          <p>2027年に5周年を迎える私たちにとって、このプロジェクトは<strong>「今後も夢を叶え続けるための一世一代の挑戦」</strong>となります。</p>
+          <p>今回のメディアミックス化を成功させて、本物の2次元アイドルへの夢に近づきたいです…！ご支援をよろしくお願いいたします。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MILESTONE ===== -->
+<section id="milestone" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">MILESTONE</span>
+      <h2 class="section-ja">マイルストーン</h2>
+    </div>
+
+    <!-- 進捗バー -->
+    <div class="milestone-progress-box fade-in">
+      <div class="mpb-top">
+        <div>
+          <div class="mpb-label">現在の支援総額</div>
+          <div class="mpb-amount" id="mpbAmount">¥ ー</div>
+        </div>
+        <div class="mpb-updated" id="mpbUpdated"></div>
+      </div>
+      <div class="mpb-bar-outer">
+        <div class="mpb-bar-inner" id="mpbBar"></div>
+      </div>
+      <div class="mpb-bar-foot">
+        <span>¥0</span>
+        <span id="mpbPercent">0%</span>
+        <span>¥5,000,000</span>
+      </div>
+      <div class="mpb-next" id="mpbNext">管理画面で支援総額を設定してください</div>
+    </div>
+
+    <p class="milestone-intro fade-in">達成金額に応じてコンテンツが増えていきます。みんなの応援がそのままアニメ化への道のりになります！</p>
+
+    <div class="milestone-list fade-in">
+
+      <div class="milestone-item" data-amount="500000">
+        <div class="milestone-amount">500,000円</div>
+        <div class="milestone-content">
+          <p>イラストの公開</p>
+          <p>アニメーションMV <strong>30秒</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="1000000">
+        <div class="milestone-amount">1,000,000円</div>
+        <div class="milestone-content">
+          <p>実写MVの公開</p>
+          <p>アニメーションMV <strong>1分</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="1500000">
+        <div class="milestone-amount">1,500,000円</div>
+        <div class="milestone-content">
+          <p>バスライブの開催</p>
+          <p>アニメーションMV <strong>1分30秒</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="2000000">
+        <div class="milestone-amount">2,000,000円</div>
+        <div class="milestone-content">
+          <p>コラボカフェの開催</p>
+          <p>アニメーションMV <strong>2分</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="2500000">
+        <div class="milestone-amount">2,500,000円</div>
+        <div class="milestone-content">
+          <p>写真集の制作</p>
+          <p>アニメーションMV <strong>2分30秒</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="3000000">
+        <div class="milestone-amount">3,000,000円</div>
+        <div class="milestone-content">
+          <p>衣装展の開催</p>
+          <p><strong>漫画制作</strong></p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="3500000">
+        <div class="milestone-amount">3,500,000円</div>
+        <div class="milestone-content">
+          <p>ソロ歌唱音源の制作</p>
+          <p>アニメーションMV <strong>3分</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="4000000">
+        <div class="milestone-amount">4,000,000円</div>
+        <div class="milestone-content">
+          <p>各メンバーセンター楽曲の制作</p>
+          <p>アニメーションMV <strong>3分30秒</strong>制作</p>
+        </div>
+      </div>
+      <div class="milestone-item" data-amount="4500000">
+        <div class="milestone-amount">4,500,000円</div>
+        <div class="milestone-content">
+          <p>街頭ビジョン放映</p>
+          <p><strong>ボイスドラマ制作</strong></p>
+        </div>
+      </div>
+      <div class="milestone-item milestone-final" data-amount="5000000">
+        <div class="milestone-amount">5,000,000円</div>
+        <div class="milestone-content">
+          <p>試写会の開催</p>
+          <p><strong>フルアニメーションMV制作</strong></p>
+        </div>
+      </div>
+
+    </div>
+    <p class="milestone-note fade-in">※ All in方式を採用。目標金額を達成せずに終了した場合でもプロジェクトは実施されます。</p>
+  </div>
+</section>
+
+<!-- ===== REWARDS ===== -->
+<section id="rewards" class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">RETURNS</span>
+      <h2 class="section-ja">リターン一覧</h2>
+    </div>
+
+    <div class="reward-tabs fade-in" id="rewardTabs">
+      <button class="reward-tab active" data-tab="startdash">スタートダッシュ</button>
+      <button class="reward-tab" data-tab="zaitaku">在宅プラン</button>
+      <button class="reward-tab" data-tab="taiken">体験型プラン</button>
+      <button class="reward-tab" data-tab="creative">クリエイティブ</button>
+      <button class="reward-tab" data-tab="special">スペシャル</button>
+      <button class="reward-tab" data-tab="hojin">法人プラン</button>
+    </div>
+
+    <!-- スタートダッシュプラン -->
+    <div class="reward-panel active" id="tab-startdash">
+      <div class="plan-header limited">
+        <span class="plan-badge">期間限定</span>
+        <h3>スタートダッシュプラン</h3>
+        <p class="plan-period">5月8日(木) 〜 5月11日(日) 23:59まで</p>
+        <p class="plan-note">※コンビニ支払いの場合、支払い期限は5月16日(金) 23:59まで</p>
+      </div>
+      <div class="reward-cards">
+        <div class="reward-card" data-reward-id="startdash_1000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥1,000</div>
+          <h4>スタートダッシュプラン ☆1,000円</h4>
+          <ul class="reward-items">
+            <li>4周年ワンマンライブ直後のオフショット動画</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>動画はご登録のメールアドレスへお届けします</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="startdash_3000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥3,000</div>
+          <h4>スタートダッシュプラン ☆3,000円</h4>
+          <ul class="reward-items">
+            <li>4周年ワンマンライブ直後のオフショット動画</li>
+            <li>宛名&サイン入りチェキ（メンバー選択可）</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>動画はご登録のメールアドレスへお届けします</p>
+            <p>チェキはご登録の住所へお届けします</p>
+            <p>メンバー選択：北郷可恩 / 雪乃さり / 雨宮れいな / ねむいのはる / 陽葵優叶</p>
+            <p>チェキへの宛名は購入時アンケートにご記入ください</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 在宅プラン -->
+    <div class="reward-panel" id="tab-zaitaku">
+      <div class="plan-header coming-soon">
+        <span class="plan-badge">近日公開</span>
+        <h3>在宅プラン</h3>
+        <p class="plan-period">5月11日(日) 以降 順次公開予定</p>
+      </div>
+      <div class="reward-cards">
+        <div class="reward-card" data-reward-id="zaitaku_3000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥3,000</div>
+          <h4>在宅プラン ¥3,000</h4>
+          <ul class="reward-items">
+            <li>お礼メッセージ動画</li>
+            <li>エンドロールへのお名前掲載</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>動画はご登録のメールアドレスへお届けします</p>
+            <p>アニメーションMV完成時のエンドロールにお名前を掲載します</p>
+            <p>エンドロール掲載名は購入時アンケートにご記入ください</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="zaitaku_5000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥5,000</div>
+          <h4>在宅プラン ¥5,000</h4>
+          <ul class="reward-items">
+            <li>お礼メッセージ動画</li>
+            <li>エンドロールへのお名前掲載</li>
+            <li>実写ミニのぼり（お宛名入り・メンバー選択可）</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>動画はご登録のメールアドレスへお届けします</p>
+            <p>ミニのぼりはご登録の住所へお届けします</p>
+            <p>メンバー選択：北郷可恩 / 雪乃さり / 雨宮れいな / ねむいのはる / 陽葵優叶</p>
+            <p>のぼり宛名・エンドロール掲載名は購入時アンケートにご記入ください</p>
+            <p>※ 複数メンバー購入希望の場合は、メンバーごとに数量1で個別にご購入ください</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="zaitaku_10000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥10,000</div>
+          <h4>在宅プラン ¥10,000</h4>
+          <ul class="reward-items">
+            <li>お礼メッセージ動画</li>
+            <li>エンドロールへのお名前掲載</li>
+            <li>実写ミニのぼり（お宛名入り・メンバー選択可）</li>
+            <li>実写集合アクスタ</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>動画はご登録のメールアドレスへお届けします</p>
+            <p>ミニのぼり・アクスタはご登録の住所へお届けします</p>
+            <p>のぼりメンバー選択：北郷可恩 / 雪乃さり / 雨宮れいな / ねむいのはる / 陽葵優叶</p>
+            <p>のぼり宛名・エンドロール掲載名は購入時アンケートにご記入ください</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="zaitaku_30000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <h4>在宅プラン ¥30,000</h4>
+          <ul class="reward-items">
+            <li>お礼メッセージ動画</li>
+            <li>エンドロールへのお名前掲載</li>
+            <li>実写ミニのぼり（お宛名入り・メンバー選択可）</li>
+            <li>実写集合アクスタ</li>
+            <li>実写フルグラフィックTシャツ（メンバー選択可）</li>
+            <li>オンラインおはなし会参加券（5分間・メンバー選択可）</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>動画はご登録のメールアドレスへお届けします</p>
+            <p>グッズ類はご登録の住所へお届けします</p>
+            <p>メンバー選択（のぼり・Tシャツ・おはなし会）：北郷可恩 / 雪乃さり / 雨宮れいな / ねむいのはる / 陽葵優叶</p>
+            <p>おはなし会はZoomにて実施。ヒアリングフォームで日程調整します</p>
+            <p>※ Tシャツのサイズ展開は確認中です</p>
+            <p>※ 複数メンバー購入希望の場合は、メンバーごとに数量1で個別にご購入ください</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 体験型プラン -->
+    <div class="reward-panel" id="tab-taiken">
+      <div class="plan-header">
+        <h3>体験型プラン</h3>
+      </div>
+      <div class="reward-cards">
+        <div class="reward-card" data-reward-id="taiken_women30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 15人限定</div>
+          <h4>女子限定！アフタヌーンティー女子会</h4>
+          <ul class="reward-items">
+            <li>アフタヌーンティー女子会参加権</li>
+            <li>開催：8月9日(日) 12時〜（70分間）</li>
+            <li>場所：都内近郊予定</li>
+            <li>集合チェキ（サインなし）込み・食事代込み</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>※ 女性の方限定のプランです</p>
+            <p>※ 当日は性別が確認できる身分証明書をご持参ください</p>
+            <p>※ 会場までの交通費はご負担いただきます</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="taiken_men30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 15人限定</div>
+          <h4>男子限定！アフタヌーンティー男子会</h4>
+          <ul class="reward-items">
+            <li>アフタヌーンティー男子会参加権</li>
+            <li>開催：8月9日(日) 14時〜（70分間）</li>
+            <li>場所：都内近郊予定</li>
+            <li>集合チェキ（サインなし）込み・食事代込み</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>※ 男性の方限定のプランです</p>
+            <p>※ 当日は性別が確認できる身分証明書をご持参ください</p>
+            <p>※ 会場までの交通費はご負担いただきます</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="taiken_photo30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 各メンバー5人限定</div>
+          <h4>はじめての！撮影会（メンバー別）</h4>
+          <p class="reward-variants">きゃのち / さりちゃん / れーにゃ / ねむちゃん / ぺんざむ（各5枠）</p>
+          <ul class="reward-items">
+            <li>個別撮影会参加権（1枠50分・完全入替制）</li>
+            <li>開催：9月13日(日) 午後〜</li>
+            <li>場所：都内スタジオ予定</li>
+            <li>スマホ撮影・三脚使用の一眼レフ撮影可（動画撮影不可）</li>
+            <li>SNS掲載自由</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>※ 1メンバーにつきお1人様1枠のみ購入可</p>
+            <p>※ 接触行為・過度なポーズ指定・公序良俗に反する撮影は禁止</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="taiken_offkai50">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥50,000</div>
+          <div class="reward-limit">★ 各メンバー15人限定</div>
+          <h4>スペシャルオフ会（メンバー別）</h4>
+          <div class="offkai-list">
+            <div class="offkai-item"><strong>きゃのちと！遊園地オフ会</strong><span>7月11日(土) 15時〜（2時間）</span></div>
+            <div class="offkai-item"><strong>さりちゃんと！猫カフェオフ会</strong><span>7月12日(日) 15時〜（2時間）</span></div>
+            <div class="offkai-item"><strong>れーにゃと！スポーツオフ会</strong><span>7月12日(日) 19時〜（2時間）</span></div>
+            <div class="offkai-item"><strong>ねむちゃんと！植物園オフ会</strong><span>7月11日(土) 11時〜（2時間）</span></div>
+            <div class="offkai-item"><strong>ぺんざむと！水族館オフ会</strong><span>7月12日(日) 11時〜（2時間）</span></div>
+          </div>
+          <ul class="reward-items">
+            <li>オフ会参加権・直筆お手紙・個別お礼メッセージ動画・入場料込み</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>メッセージ動画はご登録のメールアドレスへ / お手紙はご登録の住所へ</p>
+            <p>※ 食事代・交通費はご負担いただきます / コンビニ支払い不可</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+      </div>
+      <div class="plan-notice">
+        <h4>体験型プラン 共通注意事項</h4>
+        <ul>
+          <li>本プランは「ファン交流イベント（体験型興行）」であり、特定の支援者様への個別奉仕（接待）を目的としたものではありません。</li>
+          <li>購入後のキャンセルは不可となります。</li>
+          <li>安全管理：常にスタッフが同行し、グループ行動を徹底します。特定のメンバーとの1対1の状況は行えません。</li>
+          <li>本人確認：当日は公的な身分証明書による本人確認を行います。</li>
+          <li>規約遵守：身体接触、プライベートな質問、連絡先の交換等は一切禁止です。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- クリエイティブプラン -->
+    <div class="reward-panel" id="tab-creative">
+      <div class="plan-header">
+        <h3>クリエイティブプラン</h3>
+      </div>
+      <div class="reward-cards">
+        <div class="reward-card" data-reward-id="creative_intro30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 10枠限定</div>
+          <h4>ゆめのせいの！自己紹介ソング制作屋さん</h4>
+          <p>メンバー全員があなたのためにオリジナル自己紹介ソングを制作。楽曲アレンジは阿部 陸人が担当。</p>
+          <div class="reward-delivery"><p>※ 著作権・著作隣接権はyoumenosayに帰属します</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="creative_song200">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥200,000</div>
+          <div class="reward-limit">★ 3枠限定</div>
+          <h4>きゃのちの！楽曲制作屋さん</h4>
+          <p>北郷可恩がオリジナルソングを作詞作曲します（5分以内）。</p>
+          <div class="reward-delivery"><p>※ 著作権・著作隣接権はyoumenosayに帰属します</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="creative_design30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 5枠限定</div>
+          <h4>さりちゃんの！デザイン屋さん</h4>
+          <p>雪乃さりがオリジナルデザインのアートワークを制作。ロゴ・フライヤー・グッズデザイン等に対応。</p>
+          <div class="reward-delivery"><p>※ 著作権・著作隣接権はyoumenosayに帰属します</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="creative_craft30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 5枠限定</div>
+          <h4>れーにゃの！小物制作屋さん</h4>
+          <p>雨宮れいながオリジナル小物を制作。ヘアアクセ・推し活グッズ等に対応。</p>
+          <div class="reward-delivery"><p>※ 著作権・著作隣接権はyoumenosayに帰属します</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="creative_video30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 5枠限定</div>
+          <h4>ねむちゃんの！動画制作屋さん</h4>
+          <p>ねむいのはるがオリジナルリクエスト動画を制作。購入後にヒアリングあり。</p>
+          <div class="reward-delivery"><p>※ 著作権・著作隣接権はyoumenosayに帰属します</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="creative_yt30">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥30,000</div>
+          <div class="reward-limit">★ 5枠限定</div>
+          <h4>ぺんざむの！YouTuber屋さん</h4>
+          <p>陽葵優叶がオリジナルのYouTube動画を制作。個人チャンネルにアップロードされます。</p>
+          <div class="reward-delivery"><p>※ 著作権・著作隣接権はyoumenosayに帰属します</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- スペシャルプラン -->
+    <div class="reward-panel" id="tab-special">
+      <div class="plan-header">
+        <h3>スペシャルプラン</h3>
+      </div>
+      <div class="reward-cards">
+        <div class="reward-card" data-reward-id="special_mv200">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥200,000</div>
+          <div class="reward-limit">★ 3枠限定</div>
+          <h4>アニメーションMV出演権</h4>
+          <ul class="reward-items">
+            <li>アニメーションMVへのキャラクター出演権</li>
+            <li>エンドロールにキャラクター名の掲載</li>
+          </ul>
+          <div class="reward-delivery"><p>アニメーションMVに2次元キャラクターとなって出演できます。</p></div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="special_support300">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥300,000</div>
+          <div class="reward-limit">★ 1枠限定</div>
+          <h4>ゆめのせいサポートメンバープラン</h4>
+          <ul class="reward-items">
+            <li>ライブ出演権</li>
+            <li>リハーサル体験</li>
+            <li>特典会サポート体験</li>
+            <li>反省会参加権</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>youmenosayの活動を実際に体験いただくプランです。</p>
+            <p>※ コンビニ支払い不可 / 購入後のキャンセルは不可</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 法人プラン -->
+    <div class="reward-panel" id="tab-hojin">
+      <div class="plan-header">
+        <h3>法人プラン</h3>
+        <p class="plan-period">法人・個人事業主様対象</p>
+      </div>
+      <div class="reward-cards">
+        <div class="reward-card" data-reward-id="hojin_ume200">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥200,000</div>
+          <div class="reward-limit">★ 10枠限定</div>
+          <h4>ご協賛 &lt;梅&gt;</h4>
+          <ul class="reward-items">
+            <li>アニメーションMVエンドロールへの企業ロゴ掲載</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>購入後、ロゴデータ（AI・PNG等）をご提出いただきます</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="hojin_take500">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥500,000</div>
+          <div class="reward-limit">★ 5枠限定</div>
+          <h4>ご協賛 &lt;竹&gt;</h4>
+          <ul class="reward-items">
+            <li>アニメーションMVエンドロールへの企業ロゴ掲載</li>
+            <li>youmenosay公式SNSでのプロモーション権</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>購入後、ロゴデータ＋プロモーション内容のヒアリングシートをお送りします</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+        <div class="reward-card" data-reward-id="hojin_matsu1000">
+          <div class="reward-card-img" style="display:none"></div>
+          <div class="reward-price">¥1,000,000</div>
+          <div class="reward-limit">★ 3枠限定</div>
+          <h4>ご協賛 &lt;松&gt;</h4>
+          <ul class="reward-items">
+            <li>アニメーションMVエンドロールへの企業ロゴ掲載</li>
+            <li>youmenosay公式SNSでのプロモーション権</li>
+            <li>ライブ衣装への企業ロゴ掲載（期間限定）</li>
+          </ul>
+          <div class="reward-delivery">
+            <p>購入後、ロゴデータ・プロモーション・衣装掲載仕様のヒアリングシートをお送りします</p>
+          </div>
+          <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+        </div>
+      </div>
+      <div class="plan-notice">
+        <p>※ 各プランの購入後、担当者よりご連絡いたします</p>
+        <p>※ 企業名を購入時アンケートにご記入ください</p>
+      </div>
+    </div>
+
+    <!-- リターン品ギャラリー（管理画面から追加） -->
+    <div class="reward-gallery-section fade-in" id="rewardGallerySection" style="display:none">
+      <div class="section-header" style="margin-top:48px">
+        <span class="section-en">GALLERY</span>
+        <h3 class="section-ja" style="font-size:1.4rem">リターン品ギャラリー</h3>
+      </div>
+      <div class="reward-gallery" id="rewardGallery"></div>
+    </div>
+
+    <div class="rewards-cta fade-in">
+      <p>すべてのリターンはソレオスでご購入いただけます</p>
+      <a href="#" class="btn btn-primary btn-large soreos-link">ソレオスで支援する →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 比較表 ===== -->
+<section id="comparison" class="section" style="display:none">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">COMPARISON</span>
+      <h2 class="section-ja">リターン比較表</h2>
+    </div>
+    <div class="comparison-wrap fade-in">
+      <img id="comparisonImg" src="" alt="リターン比較表" class="comparison-img">
+    </div>
+  </div>
+</section>
+
+<!-- ===== SCHEDULE ===== -->
+<section id="schedule" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">SCHEDULE</span>
+      <h2 class="section-ja">スケジュール</h2>
+    </div>
+    <div class="schedule-timeline fade-in">
+      <div class="schedule-item" data-date="2025-05-08">
+        <div class="schedule-date">5月8日(木)</div>
+        <div class="schedule-content">
+          <h4>クラウドファンディング スタート</h4>
+          <p>スタートダッシュプラン公開開始</p>
+        </div>
+      </div>
+      <div class="schedule-item" data-date="2025-05-11">
+        <div class="schedule-date">5月11日(日)</div>
+        <div class="schedule-content">
+          <h4>スタートダッシュプラン 終了</h4>
+          <p>23:59まで（コンビニ払い期限：5月16日(金) 23:59）</p>
+          <h4>在宅プラン等 順次公開開始</h4>
+        </div>
+      </div>
+      <div class="schedule-item" data-date="2025-07-11">
+        <div class="schedule-date">7月11日(土)</div>
+        <div class="schedule-content">
+          <h4>きゃのちと！遊園地オフ会</h4>
+          <p>15:00〜（2時間）</p>
+          <h4>ねむちゃんと！植物園オフ会</h4>
+          <p>11:00〜（2時間）</p>
+        </div>
+      </div>
+      <div class="schedule-item" data-date="2025-07-12">
+        <div class="schedule-date">7月12日(日)</div>
+        <div class="schedule-content">
+          <h4>さりちゃんと！猫カフェオフ会</h4>
+          <p>15:00〜（2時間）</p>
+          <h4>れーにゃと！スポーツオフ会</h4>
+          <p>19:00〜（2時間）</p>
+          <h4>ぺんざむと！水族館オフ会</h4>
+          <p>11:00〜（2時間）</p>
+        </div>
+      </div>
+      <div class="schedule-item" data-date="2025-08-09">
+        <div class="schedule-date">8月9日(日)</div>
+        <div class="schedule-content">
+          <h4>アフタヌーンティー女子会</h4>
+          <p>12:00〜（70分間）</p>
+          <h4>アフタヌーンティー男子会</h4>
+          <p>14:00〜（70分間）</p>
+        </div>
+      </div>
+      <div class="schedule-item" data-date="2025-09-13">
+        <div class="schedule-date">9月13日(日)</div>
+        <div class="schedule-content">
+          <h4>はじめての！撮影会</h4>
+          <p>午後〜（都内スタジオ）</p>
+        </div>
+      </div>
+      <div class="schedule-item highlight" data-date="2027-03-01">
+        <div class="schedule-date">2027年</div>
+        <div class="schedule-content">
+          <h4>youmenosay 5周年</h4>
+          <p>アニメーションMV完成・試写会開催（目標達成時）</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NOTES ===== -->
+<section id="notes" class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-en">NOTES</span>
+      <h2 class="section-ja">注意事項</h2>
+    </div>
+    <div class="notes-content fade-in">
+      <ul class="notes-list">
+        <li>本プロジェクトは<strong>【All in方式】</strong>を採用しており、目標金額を達成せずに終了した場合でもプロジェクトは実施されます。</li>
+        <li>購入後のコース変更・内容変更・キャンセルは承ることができません。注文内容や数量をよくご確認の上お申し込みください。</li>
+        <li>お届けした返礼品は不良品を除き、返品は受け付けられません。</li>
+        <li>本プロジェクトの支払方法は<strong>【クレジットカード】【コンビニ決済】</strong>となっております（一部プランを除く）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUPPORT CTA ===== -->
+<section id="support" class="section cta-section">
+  <div class="container">
+    <h2 class="fade-in">あなたの支援が、夢を現実にします。</h2>
+    <p class="fade-in">youmenosayと一緒に、アニメ化という夢への第一歩を踏み出しましょう！</p>
+    <a href="#" class="btn btn-primary btn-large soreos-link fade-in">ソレオスで支援する →</a>
+    <p class="cta-note fade-in">アニメイト運営 クラウドファンディングプラットフォーム「ソレオス」</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p class="footer-logo">youmenosay</p>
+    <p class="footer-copy">&copy; 2025 youmenosay All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
