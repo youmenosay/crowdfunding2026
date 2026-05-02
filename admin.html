@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理画面 | youmenosay CF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #0f0b1e;
+      --surface:  #1e1a35;
+      --border:   #2e2a50;
+      --text:     #f0ecff;
+      --muted:    #9d96c0;
+      --primary:  #e879b0;
+      --accent:   #f5a623;
+      --success:  #4ade80;
+      --radius:   10px;
+    }
+    body {
+      font-family:      'Noto Sans JP', sans-serif;
+      background-color: var(--bg);
+      color:            var(--text);
+      font-size:        14px;
+      line-height:      1.6;
+      min-height:       100vh;
+    }
+
+    /* ====== ログイン画面 ====== */
+    #loginScreen {
+      display:          flex;
+      align-items:      center;
+      justify-content:  center;
+      min-height:       100vh;
+      padding:          24px;
+    }
+    .login-box {
+      background:    var(--surface);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       48px 40px;
+      width:         100%;
+      max-width:     400px;
+      text-align:    center;
+    }
+    .login-box h1 {
+      font-size:     1.4rem;
+      font-weight:   700;
+      margin-bottom: 6px;
+      color:         var(--primary);
+    }
+    .login-box p {
+      color:         var(--muted);
+      font-size:     0.85rem;
+      margin-bottom: 28px;
+    }
+    .login-box input {
+      width:         100%;
+      padding:       12px 16px;
+      background:    var(--bg);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      color:         var(--text);
+      font-size:     1rem;
+      margin-bottom: 16px;
+      outline:       none;
+    }
+    .login-box input:focus { border-color: var(--primary); }
+    .login-error {
+      color:         #f87171;
+      font-size:     0.85rem;
+      margin-bottom: 12px;
+      display:       none;
+    }
+
+    /* ====== 管理画面レイアウト ====== */
+    #adminScreen { display: none; }
+    .admin-header {
+      background:    var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding:       0 24px;
+      height:        56px;
+      display:       flex;
+      align-items:   center;
+      justify-content: space-between;
+      position:      sticky;
+      top:           0;
+      z-index:       10;
+    }
+    .admin-header h1 {
+      font-size:   1rem;
+      font-weight: 700;
+      color:       var(--primary);
+    }
+    .header-actions { display: flex; gap: 10px; }
+
+    .admin-body {
+      display:   grid;
+      grid-template-columns: 200px 1fr;
+      min-height: calc(100vh - 56px);
+    }
+    .admin-nav {
+      background:    var(--surface);
+      border-right:  1px solid var(--border);
+      padding:       16px 0;
+    }
+    .admin-nav-item {
+      display:    block;
+      padding:    10px 20px;
+      font-size:  0.875rem;
+      color:      var(--muted);
+      cursor:     pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .admin-nav-item:hover  { color: var(--text); background: rgba(255,255,255,0.03); }
+    .admin-nav-item.active { color: var(--primary); border-left-color: var(--primary); }
+
+    .admin-main { padding: 28px; overflow-y: auto; }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    .section-title {
+      font-size:     1.1rem;
+      font-weight:   700;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ====== フォーム部品 ====== */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display:       block;
+      font-size:     0.85rem;
+      color:         var(--muted);
+      margin-bottom: 6px;
+      font-weight:   500;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="url"],
+    .form-group input[type="color"],
+    .form-group select,
+    .form-group textarea {
+      width:         100%;
+      padding:       10px 14px;
+      background:    var(--bg);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      color:         var(--text);
+      font-size:     0.9rem;
+      font-family:   inherit;
+      outline:       none;
+      transition:    border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--primary); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group input[type="color"] {
+      padding:    4px;
+      height:     40px;
+      cursor:     pointer;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap:     16px;
+    }
+
+    .card {
+      background:    var(--surface);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       20px 24px;
+      margin-bottom: 20px;
+    }
+    .card h3 {
+      font-size:     0.95rem;
+      font-weight:   700;
+      margin-bottom: 16px;
+      color:         var(--primary);
+    }
+
+    /* ====== ボタン ====== */
+    .btn {
+      display:       inline-flex;
+      align-items:   center;
+      gap:           6px;
+      padding:       9px 20px;
+      border-radius: 999px;
+      border:        none;
+      font-family:   inherit;
+      font-size:     0.875rem;
+      font-weight:   700;
+      cursor:        pointer;
+      transition:    all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #e879b0, #7c3aed);
+      color:      #fff;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-outline {
+      background:   transparent;
+      border:       1px solid var(--border);
+      color:        var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success {
+      background: var(--success);
+      color:      #000;
+    }
+    .btn-danger {
+      background: transparent;
+      border:     1px solid #f87171;
+      color:      #f87171;
+    }
+    .btn-danger:hover { background: rgba(248,113,113,0.1); }
+    .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+
+    /* ====== 画像アップロード ====== */
+    .upload-area {
+      border:        2px dashed var(--border);
+      border-radius: var(--radius);
+      padding:       40px 20px;
+      text-align:    center;
+      cursor:        pointer;
+      transition:    border-color 0.2s, background 0.2s;
+      position:      relative;
+    }
+    .upload-area:hover,
+    .upload-area.drag-over {
+      border-color: var(--primary);
+      background:   rgba(232,121,176,0.04);
+    }
+    .upload-area input[type="file"] {
+      position: absolute;
+      inset:    0;
+      opacity:  0;
+      cursor:   pointer;
+    }
+    .upload-area p { color: var(--muted); font-size: 0.875rem; }
+    .upload-area span { color: var(--primary); font-weight: 700; }
+
+    .image-preview {
+      max-width:     100%;
+      max-height:    200px;
+      border-radius: var(--radius);
+      display:       none;
+      margin:        12px auto 0;
+    }
+
+    /* ====== 抽出カラー ====== */
+    .extracted-colors {
+      display:    none;
+      margin-top: 16px;
+    }
+    .extracted-colors h4 {
+      font-size:     0.85rem;
+      color:         var(--muted);
+      margin-bottom: 10px;
+    }
+    .color-swatches {
+      display: flex;
+      gap:     8px;
+      flex-wrap: wrap;
+    }
+    .color-swatch {
+      width:         48px;
+      height:        48px;
+      border-radius: var(--radius);
+      cursor:        pointer;
+      border:        2px solid transparent;
+      transition:    transform 0.15s, border-color 0.15s;
+      position:      relative;
+    }
+    .color-swatch:hover { transform: scale(1.1); }
+    .color-swatch.selected { border-color: #fff; }
+    .swatch-hex {
+      position:   absolute;
+      bottom:     -18px;
+      left:       50%;
+      transform:  translateX(-50%);
+      font-size:  0.65rem;
+      color:      var(--muted);
+      white-space: nowrap;
+    }
+    .color-apply-row {
+      display:     flex;
+      align-items: center;
+      gap:         10px;
+      margin-top:  28px;
+    }
+    .color-apply-row select {
+      flex:          1;
+      padding:       8px 12px;
+      background:    var(--bg);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      color:         var(--text);
+      font-family:   inherit;
+      font-size:     0.875rem;
+    }
+    #selectedSwatchPreview {
+      width:         32px;
+      height:        32px;
+      border-radius: 50%;
+      border:        1px solid var(--border);
+      background:    #888;
+    }
+
+    /* ====== リワード設定 ====== */
+    .reward-row {
+      display:       flex;
+      align-items:   center;
+      gap:           12px;
+      padding:       14px 16px;
+      background:    var(--bg);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      border:        1px solid var(--border);
+    }
+    .reward-row-label {
+      flex:        1;
+      font-size:   0.9rem;
+      font-weight: 500;
+    }
+    .reward-row-controls {
+      display: flex;
+      gap:     8px;
+      align-items: center;
+    }
+
+    /* ====== トグル ====== */
+    .toggle {
+      position: relative;
+      width:    44px;
+      height:   24px;
+    }
+    .toggle input { display: none; }
+    .toggle-slider {
+      position:      absolute;
+      inset:         0;
+      background:    var(--border);
+      border-radius: 999px;
+      cursor:        pointer;
+      transition:    background 0.2s;
+    }
+    .toggle-slider::after {
+      content:       '';
+      position:      absolute;
+      left:          3px;
+      top:           3px;
+      width:         18px;
+      height:        18px;
+      border-radius: 50%;
+      background:    #fff;
+      transition:    transform 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: var(--primary); }
+    .toggle input:checked + .toggle-slider::after { transform: translateX(20px); }
+
+    /* ====== トースト通知 ====== */
+    #toast {
+      position:      fixed;
+      bottom:        24px;
+      right:         24px;
+      background:    var(--success);
+      color:         #000;
+      padding:       12px 24px;
+      border-radius: var(--radius);
+      font-weight:   700;
+      font-size:     0.875rem;
+      display:       none;
+      z-index:       999;
+      animation:     fadeInUp 0.3s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    canvas { display: none; }
+
+    /* ====== 画像管理 ====== */
+    .img-upload-area {
+      border:        2px dashed var(--border);
+      border-radius: var(--radius);
+      padding:       24px 16px;
+      text-align:    center;
+      cursor:        pointer;
+      transition:    border-color 0.2s, background 0.2s;
+      position:      relative;
+      overflow:      hidden;
+    }
+    .img-upload-area:hover,
+    .img-upload-area.drag-over {
+      border-color: var(--primary);
+      background:   rgba(232,121,176,0.04);
+    }
+    .img-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+    .img-upload-area p { color: var(--muted); font-size: 0.85rem; }
+    .img-upload-area span { color: var(--primary); font-weight: 700; }
+
+    .img-thumb-wrap {
+      position:      relative;
+      display:       none;
+      margin-top:    12px;
+    }
+    .img-thumb-wrap.has-image { display: block; }
+    .img-thumb {
+      max-width:     100%;
+      max-height:    180px;
+      border-radius: var(--radius);
+      object-fit:    contain;
+      display:       block;
+      margin:        0 auto;
+    }
+    .img-remove-btn {
+      position:      absolute;
+      top:           6px;
+      right:         6px;
+      background:    rgba(248,113,113,0.9);
+      color:         #fff;
+      border:        none;
+      border-radius: 50%;
+      width:         26px;
+      height:        26px;
+      font-size:     1rem;
+      cursor:        pointer;
+      line-height:   1;
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+    }
+
+    .reward-img-list {
+      display:        flex;
+      flex-direction: column;
+      gap:            12px;
+      margin-bottom:  12px;
+    }
+    .reward-img-item {
+      background:    var(--bg);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       14px;
+      display:       grid;
+      grid-template-columns: 120px 1fr auto;
+      gap:           12px;
+      align-items:   center;
+    }
+    .reward-img-item img {
+      width:         120px;
+      height:        80px;
+      object-fit:    cover;
+      border-radius: 6px;
+    }
+    .reward-img-item input[type="text"] {
+      width:         100%;
+      padding:       8px 12px;
+      background:    var(--surface);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      color:         var(--text);
+      font-size:     0.875rem;
+      font-family:   inherit;
+      outline:       none;
+    }
+    .reward-img-item input:focus { border-color: var(--primary); }
+  </style>
+</head>
+<body>
+
+<!-- ====== ログイン ====== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>youmenosay CF</h1>
+    <p>管理画面</p>
+    <input type="password" id="pwInput" placeholder="パスワードを入力" autocomplete="current-password">
+    <p class="login-error" id="loginError">パスワードが正しくありません</p>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">ログイン</button>
+  </div>
+</div>
+
+<!-- ====== 管理画面 ====== -->
+<div id="adminScreen">
+  <header class="admin-header">
+    <h1>youmenosay CF 管理画面</h1>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" onclick="openPreview()">プレビュー</button>
+      <button class="btn btn-success btn-sm" onclick="exportConfig()">config.jsをダウンロード</button>
+      <button class="btn btn-outline btn-sm" onclick="exportImages()">画像データをダウンロード</button>
+      <button class="btn btn-danger btn-sm" onclick="logout()">ログアウト</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+    <nav class="admin-nav">
+      <div class="admin-nav-item active" data-section="design" onclick="switchSection(this)">デザイン</div>
+      <div class="admin-nav-item" data-section="progress" onclick="switchSection(this)">進捗管理</div>
+      <div class="admin-nav-item" data-section="content" onclick="switchSection(this)">テキスト編集</div>
+      <div class="admin-nav-item" data-section="images" onclick="switchSection(this)">画像管理</div>
+      <div class="admin-nav-item" data-section="soreos" onclick="switchSection(this)">ソレオスリンク</div>
+      <div class="admin-nav-item" data-section="rewards" onclick="switchSection(this)">リワード設定</div>
+    </nav>
+
+    <main class="admin-main">
+
+      <!-- ====== デザインセクション ====== -->
+      <div class="admin-section active" id="section-design">
+        <h2 class="section-title">デザイン設定</h2>
+
+        <div class="card">
+          <h3>画像からカラーを抽出</h3>
+          <div class="upload-area" id="uploadArea">
+            <input type="file" accept="image/*" id="imageInput" onchange="handleImageUpload(event)">
+            <p><span>クリックまたはドラッグ</span>して画像をアップロード</p>
+            <p style="margin-top:8px;font-size:0.8rem;">ロゴ・フライヤー・パンフレットなどの画像からカラーを自動抽出します</p>
+            <img id="imagePreview" class="image-preview" alt="プレビュー">
+          </div>
+
+          <div class="extracted-colors" id="extractedColors">
+            <h4>抽出されたカラー（クリックして選択）</h4>
+            <div class="color-swatches" id="colorSwatches"></div>
+            <div class="color-apply-row">
+              <div id="selectedSwatchPreview"></div>
+              <select id="colorTarget">
+                <option value="colorPrimary">プライマリカラー（メインアクセント）</option>
+                <option value="colorSecondary">セカンダリカラー（グラデーション）</option>
+                <option value="colorAccent">アクセントカラー（強調）</option>
+                <option value="colorBg">背景色</option>
+                <option value="colorSurface">カードの背景色</option>
+                <option value="colorText">テキスト色</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="applyExtractedColor()">適用</button>
+            </div>
+          </div>
+          <canvas id="colorCanvas"></canvas>
+        </div>
+
+        <div class="card">
+          <h3>カラー設定</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>プライマリカラー</label>
+              <input type="color" id="colorPrimary" oninput="previewTheme()">
+            </div>
+            <div class="form-group">
+              <label>セカンダリカラー</label>
+              <input type="color" id="colorSecondary" oninput="previewTheme()">
+            </div>
+            <div class="form-group">
+              <label>アクセントカラー</label>
+              <input type="color" id="colorAccent" oninput="previewTheme()">
+            </div>
+            <div class="form-group">
+              <label>背景色</label>
+              <input type="color" id="colorBg" oninput="previewTheme()">
+            </div>
+            <div class="form-group">
+              <label>カード背景色</label>
+              <input type="color" id="colorSurface" oninput="previewTheme()">
+            </div>
+            <div class="form-group">
+              <label>テキスト色</label>
+              <input type="color" id="colorText" oninput="previewTheme()">
+            </div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="resetColors()">デフォルトに戻す</button>
+        </div>
+
+        <div class="card">
+          <h3>フォント設定</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>見出しフォント</label>
+              <select id="fontHeading" onchange="previewTheme()">
+                <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic（丸ゴシック）</option>
+                <option value="'Noto Serif JP', serif">Noto Serif JP（明朝体）</option>
+                <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c（丸ゴシック）</option>
+                <option value="'Shippori Mincho', serif">Shippori Mincho（明朝体）</option>
+                <option value="'Klee One', cursive">Klee One（手書き風）</option>
+                <option value="'Noto Sans JP', sans-serif">Noto Sans JP（ゴシック）</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>本文フォント</label>
+              <select id="fontBody" onchange="previewTheme()">
+                <option value="'Noto Sans JP', sans-serif">Noto Sans JP（ゴシック）</option>
+                <option value="'M PLUS 1p', sans-serif">M PLUS 1p（ゴシック）</option>
+                <option value="'Noto Serif JP', serif">Noto Serif JP（明朝体）</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettings()">設定を保存</button>
+      </div>
+
+      <!-- ====== 進捗管理セクション ====== -->
+      <div class="admin-section" id="section-progress">
+        <h2 class="section-title">進捗管理</h2>
+
+        <div class="card">
+          <h3>ソレオスから支援金額を取得</h3>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:16px;">
+            ソレオスのプロジェクトURLを入力して「取得」ボタンを押すと、現在の支援総額を自動で読み込みます。<br>
+            ※取得できない場合は手動入力してください（外部サービスのHTML構造変更により取得できないことがあります）。
+          </p>
+          <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
+            <div class="form-group" style="flex:1;margin-bottom:0">
+              <label>ソレオス プロジェクトURL</label>
+              <input type="url" id="fetchSoreosUrl" placeholder="https://soreos.animate.co.jp/...">
+            </div>
+            <button class="btn btn-outline" onclick="fetchAmountFromSoreos()" id="fetchBtn">取得</button>
+          </div>
+          <div id="fetchStatus" style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;display:none;"></div>
+        </div>
+
+        <div class="card">
+          <h3>現在の支援総額</h3>
+          <div class="form-group">
+            <label>支援総額（円）※数字のみ入力</label>
+            <input type="text" id="currentAmount" placeholder="例：1234567" inputmode="numeric">
+          </div>
+          <div id="amountPreview" style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;"></div>
+          <div class="form-group">
+            <label>更新日時（自動入力されます）</label>
+            <input type="text" id="currentAmountUpdatedAt" placeholder="保存時に自動入力されます" readonly style="opacity:0.6">
+          </div>
+          <button class="btn btn-primary" onclick="saveProgress()">進捗を保存</button>
+        </div>
+      </div>
+
+      <!-- ====== テキスト編集セクション ====== -->
+      <div class="admin-section" id="section-content">
+        <h2 class="section-title">テキスト編集</h2>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:24px;">
+          各テキストを編集後、「設定を保存」→「config.jsをダウンロード」でサイトに反映されます。<br>
+          空白のままにするとHTMLのデフォルト表示が使われます。
+        </p>
+
+        <div class="card">
+          <h3>ヒーローエリア</h3>
+          <div class="form-group">
+            <label>メインタイトル（ヒーロー）</label>
+            <input type="text" id="heroTitle" placeholder="例：アニメ化プロジェクト">
+          </div>
+          <div class="form-group">
+            <label>リード文（改行は↵Enterで入力可）</label>
+            <textarea id="heroLead" rows="4" placeholder="ヒーローエリアの説明文..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>目標金額表示テキスト</label>
+            <input type="text" id="goalAmount" placeholder="例：5,000,000">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>はじめに（グループ紹介）</h3>
+          <div class="form-group">
+            <label>本文</label>
+            <textarea id="aboutMain" rows="6" placeholder="グループについての説明文..."></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>実現したいこと（プロジェクト説明）</h3>
+          <div class="form-group">
+            <label>本文</label>
+            <textarea id="projectMain" rows="6" placeholder="プロジェクトの内容..."></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>プロデューサーメッセージ</h3>
+          <div class="form-group">
+            <label>メッセージ本文</label>
+            <textarea id="producerMessage" rows="6" placeholder="プロデューサーからのメッセージ..."></textarea>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettings()">設定を保存</button>
+      </div>
+
+      <!-- ====== ソレオスリンクセクション ====== -->
+      <div class="admin-section" id="section-soreos">
+        <h2 class="section-title">ソレオスリンク設定</h2>
+        <div class="card">
+          <h3>ソレオスへのURL</h3>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:16px;">
+            クラウドファンディングプラットフォーム「ソレオス」（アニメイト運営）のプロジェクトページURLを入力してください。<br>
+            設定後、サイト上のすべての「ソレオスで支援する」ボタンに反映されます。
+          </p>
+          <div class="form-group">
+            <label>ソレオス プロジェクトURL</label>
+            <input type="url" id="soreosUrl" placeholder="https://soreos.animate.co.jp/...">
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">保存</button>
+        </div>
+      </div>
+
+      <!-- ====== 画像管理セクション ====== -->
+      <div class="admin-section" id="section-images">
+        <h2 class="section-title">画像管理</h2>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:24px;">
+          画像を設定後、「画像データをダウンロード」ボタンで <code style="color:var(--accent)">images-data.js</code> を書き出してください。<br>
+          ダウンロードしたファイルをホスティングの同名ファイルと差し替えると反映されます。
+        </p>
+
+        <!-- メインビジュアル -->
+        <div class="card">
+          <h3>メインビジュアル（ヒーロー背景）</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">トップページのヒーローエリアに背景として表示されます。横長の画像（推奨: 1920×1080px以上）が適しています。</p>
+          <div class="img-upload-area" id="heroUploadArea">
+            <input type="file" accept="image/*" id="heroImageInput" onchange="handleImgUpload('hero', event)">
+            <p><span>クリックまたはドラッグ</span>してアップロード</p>
+            <p style="margin-top:6px;font-size:0.78rem;">PNG / JPG / WEBP（最大2048px幅に自動リサイズ）</p>
+          </div>
+          <div class="img-thumb-wrap" id="heroThumbWrap">
+            <img class="img-thumb" id="heroThumb" src="" alt="ヒーロー画像">
+            <button class="img-remove-btn" onclick="removeImg('hero')" title="削除">×</button>
+          </div>
+        </div>
+
+        <!-- リターン比較表 -->
+        <div class="card">
+          <h3>リターン比較表</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">各リターンを一覧で比較できる表を画像で掲載できます。リターンセクションの下に表示されます。</p>
+          <div class="img-upload-area" id="compUploadArea">
+            <input type="file" accept="image/*" id="compImageInput" onchange="handleImgUpload('comparison', event)">
+            <p><span>クリックまたはドラッグ</span>してアップロード</p>
+            <p style="margin-top:6px;font-size:0.78rem;">PNG / JPG（横長の表画像を推奨）</p>
+          </div>
+          <div class="img-thumb-wrap" id="compThumbWrap">
+            <img class="img-thumb" id="compThumb" src="" alt="比較表">
+            <button class="img-remove-btn" onclick="removeImg('comparison')" title="削除">×</button>
+          </div>
+        </div>
+
+        <!-- プロジェクト説明画像 -->
+        <div class="card">
+          <h3>プロジェクト説明画像</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">「実現したいこと」セクションに表示されるギャラリー画像です。複数枚追加できます。</p>
+          <div class="reward-img-list" id="projectImgList"></div>
+          <div class="img-upload-area" id="projAddArea" style="margin-bottom:0">
+            <input type="file" accept="image/*" id="projImgInput" onchange="addProjectImg(event)">
+            <p><span>クリックまたはドラッグ</span>して画像を追加</p>
+          </div>
+        </div>
+
+        <!-- リターン品の説明画像 -->
+        <div class="card">
+          <h3>リターン品の説明画像（ギャラリー）</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">グッズ・特典の写真など、リターンの詳細説明に使う画像を複数追加できます。リターンセクション内にギャラリー表示されます。</p>
+          <div class="reward-img-list" id="rewardImgList"></div>
+          <div class="img-upload-area" id="rewardAddArea" style="margin-bottom:0">
+            <input type="file" accept="image/*" id="rewardImgInput" onchange="addRewardImg(event)">
+            <p><span>クリックまたはドラッグ</span>して画像を追加</p>
+          </div>
+        </div>
+
+        <!-- メンバー写真 -->
+        <div class="card">
+          <h3>メンバー写真</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:16px;">各メンバーのプロフィール写真を設定します。正方形に近い画像（推奨: 400×400px以上）が適しています。</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+            <div id="memberUpload_kano" class="member-img-block">
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;">北郷可恩</div>
+              <div class="img-upload-area" style="padding:16px 10px">
+                <input type="file" accept="image/*" onchange="handleMemberImgUpload('kano', event)">
+                <p style="font-size:0.78rem;"><span>クリック</span>してアップロード</p>
+              </div>
+              <div class="img-thumb-wrap" id="memberThumbWrap_kano">
+                <img class="img-thumb" id="memberThumb_kano" src="" alt="北郷可恩">
+                <button class="img-remove-btn" onclick="removeMemberImg('kano')" title="削除">×</button>
+              </div>
+            </div>
+            <div id="memberUpload_sari" class="member-img-block">
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;">雪乃さり</div>
+              <div class="img-upload-area" style="padding:16px 10px">
+                <input type="file" accept="image/*" onchange="handleMemberImgUpload('sari', event)">
+                <p style="font-size:0.78rem;"><span>クリック</span>してアップロード</p>
+              </div>
+              <div class="img-thumb-wrap" id="memberThumbWrap_sari">
+                <img class="img-thumb" id="memberThumb_sari" src="" alt="雪乃さり">
+                <button class="img-remove-btn" onclick="removeMemberImg('sari')" title="削除">×</button>
+              </div>
+            </div>
+            <div id="memberUpload_reina" class="member-img-block">
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;">雨宮れいな</div>
+              <div class="img-upload-area" style="padding:16px 10px">
+                <input type="file" accept="image/*" onchange="handleMemberImgUpload('reina', event)">
+                <p style="font-size:0.78rem;"><span>クリック</span>してアップロード</p>
+              </div>
+              <div class="img-thumb-wrap" id="memberThumbWrap_reina">
+                <img class="img-thumb" id="memberThumb_reina" src="" alt="雨宮れいな">
+                <button class="img-remove-btn" onclick="removeMemberImg('reina')" title="削除">×</button>
+              </div>
+            </div>
+            <div id="memberUpload_haru" class="member-img-block">
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;">ねむいのはる</div>
+              <div class="img-upload-area" style="padding:16px 10px">
+                <input type="file" accept="image/*" onchange="handleMemberImgUpload('haru', event)">
+                <p style="font-size:0.78rem;"><span>クリック</span>してアップロード</p>
+              </div>
+              <div class="img-thumb-wrap" id="memberThumbWrap_haru">
+                <img class="img-thumb" id="memberThumb_haru" src="" alt="ねむいのはる">
+                <button class="img-remove-btn" onclick="removeMemberImg('haru')" title="削除">×</button>
+              </div>
+            </div>
+            <div id="memberUpload_yuka" class="member-img-block">
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;">陽葵優叶</div>
+              <div class="img-upload-area" style="padding:16px 10px">
+                <input type="file" accept="image/*" onchange="handleMemberImgUpload('yuka', event)">
+                <p style="font-size:0.78rem;"><span>クリック</span>してアップロード</p>
+              </div>
+              <div class="img-thumb-wrap" id="memberThumbWrap_yuka">
+                <img class="img-thumb" id="memberThumb_yuka" src="" alt="陽葵優叶">
+                <button class="img-remove-btn" onclick="removeMemberImg('yuka')" title="削除">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- リターンカード個別画像 -->
+        <div class="card">
+          <h3>リターンカード個別画像</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:16px;">各リターンプランのカードに表示するサムネイル画像を設定します。</p>
+
+          <div style="margin-bottom:20px">
+            <div style="font-size:0.9rem;font-weight:700;color:var(--accent);margin-bottom:12px;">スタートダッシュプラン</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">¥1,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('startdash_1000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_startdash_1000"><img class="img-thumb" id="cardThumb_startdash_1000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('startdash_1000')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">¥3,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('startdash_3000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_startdash_3000"><img class="img-thumb" id="cardThumb_startdash_3000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('startdash_3000')" title="削除">×</button></div></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:20px">
+            <div style="font-size:0.9rem;font-weight:700;color:var(--accent);margin-bottom:12px;">在宅プラン</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">¥3,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('zaitaku_3000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_zaitaku_3000"><img class="img-thumb" id="cardThumb_zaitaku_3000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('zaitaku_3000')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">¥5,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('zaitaku_5000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_zaitaku_5000"><img class="img-thumb" id="cardThumb_zaitaku_5000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('zaitaku_5000')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">¥10,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('zaitaku_10000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_zaitaku_10000"><img class="img-thumb" id="cardThumb_zaitaku_10000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('zaitaku_10000')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('zaitaku_30000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_zaitaku_30000"><img class="img-thumb" id="cardThumb_zaitaku_30000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('zaitaku_30000')" title="削除">×</button></div></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:20px">
+            <div style="font-size:0.9rem;font-weight:700;color:var(--accent);margin-bottom:12px;">体験型プラン</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">女性限定¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('taiken_women30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_taiken_women30"><img class="img-thumb" id="cardThumb_taiken_women30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('taiken_women30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">男性限定¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('taiken_men30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_taiken_men30"><img class="img-thumb" id="cardThumb_taiken_men30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('taiken_men30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">フォト¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('taiken_photo30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_taiken_photo30"><img class="img-thumb" id="cardThumb_taiken_photo30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('taiken_photo30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">オフ会¥50,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('taiken_offkai50',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_taiken_offkai50"><img class="img-thumb" id="cardThumb_taiken_offkai50" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('taiken_offkai50')" title="削除">×</button></div></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:20px">
+            <div style="font-size:0.9rem;font-weight:700;color:var(--accent);margin-bottom:12px;">クリエイティブプラン</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">紹介¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('creative_intro30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_creative_intro30"><img class="img-thumb" id="cardThumb_creative_intro30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('creative_intro30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">楽曲¥200,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('creative_song200',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_creative_song200"><img class="img-thumb" id="cardThumb_creative_song200" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('creative_song200')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">デザイン¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('creative_design30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_creative_design30"><img class="img-thumb" id="cardThumb_creative_design30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('creative_design30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">クラフト¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('creative_craft30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_creative_craft30"><img class="img-thumb" id="cardThumb_creative_craft30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('creative_craft30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">動画¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('creative_video30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_creative_video30"><img class="img-thumb" id="cardThumb_creative_video30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('creative_video30')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">YT¥30,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('creative_yt30',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_creative_yt30"><img class="img-thumb" id="cardThumb_creative_yt30" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('creative_yt30')" title="削除">×</button></div></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:20px">
+            <div style="font-size:0.9rem;font-weight:700;color:var(--accent);margin-bottom:12px;">スペシャルプラン</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">MV¥200,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('special_mv200',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_special_mv200"><img class="img-thumb" id="cardThumb_special_mv200" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('special_mv200')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">サポート¥300,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('special_support300',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_special_support300"><img class="img-thumb" id="cardThumb_special_support300" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('special_support300')" title="削除">×</button></div></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--accent);margin-bottom:12px;">法人プラン</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">梅¥200,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('hojin_ume200',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_hojin_ume200"><img class="img-thumb" id="cardThumb_hojin_ume200" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('hojin_ume200')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">竹¥500,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('hojin_take500',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_hojin_take500"><img class="img-thumb" id="cardThumb_hojin_take500" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('hojin_take500')" title="削除">×</button></div></div>
+              <div><div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">松¥1,000,000</div><div class="img-upload-area" style="padding:12px 8px"><input type="file" accept="image/*" onchange="handleCardImgUpload('hojin_matsu1000',event)"><p style="font-size:0.75rem;"><span>アップロード</span></p></div><div class="img-thumb-wrap" id="cardThumbWrap_hojin_matsu1000"><img class="img-thumb" id="cardThumb_hojin_matsu1000" src="" alt=""><button class="img-remove-btn" onclick="removeCardImg('hojin_matsu1000')" title="削除">×</button></div></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveImgSettings()">画像設定を保存</button>
+      </div>
+
+      <!-- ====== リワード設定セクション ====== -->
+      <div class="admin-section" id="section-rewards">
+        <h2 class="section-title">リワード公開設定</h2>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">各リワードカテゴリーの表示状態を管理できます。</p>
+
+        <div id="rewardSettingsList"></div>
+
+        <button class="btn btn-primary" style="margin-top:8px" onclick="saveSettings()">設定を保存</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast">保存しました</div>
+
+<script>
+// ====== 定数 ======
+const PASSWORD = 'youmenosay2257';
+const STORAGE_KEY = 'yms_admin_config';
+
+const REWARD_LABELS = {
+  startDash: 'スタートダッシュプラン',
+  zaitaku:   '在宅プラン',
+  taiken:    '体験型プラン',
+  creative:  'クリエイティブプラン',
+  special:   'スペシャルプラン',
+  hojin:     '法人プラン',
+};
+
+const DEFAULT_COLORS = {
+  colorPrimary:   '#e879b0',
+  colorSecondary: '#7c3aed',
+  colorAccent:    '#f5a623',
+  colorBg:        '#0f0b1e',
+  colorSurface:   '#1e1a35',
+  colorText:      '#f0ecff',
+};
+
+// ====== 状態 ======
+let config = null;
+let selectedSwatchColor = null;
+
+const MEMBER_KEYS = ['kano', 'sari', 'reina', 'haru', 'yuka'];
+const CARD_KEYS   = [
+  'startdash_1000','startdash_3000',
+  'zaitaku_3000','zaitaku_5000','zaitaku_10000','zaitaku_30000',
+  'taiken_women30','taiken_men30','taiken_photo30','taiken_offkai50',
+  'creative_intro30','creative_song200','creative_design30',
+  'creative_craft30','creative_video30','creative_yt30',
+  'special_mv200','special_support300',
+  'hojin_ume200','hojin_take500','hojin_matsu1000',
+];
+
+// ====== ログイン ======
+function login() {
+  const val = document.getElementById('pwInput').value;
+  if (val === PASSWORD) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    loadConfig();
+    loadImgData();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+  }
+}
+
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+
+function logout() {
+  document.getElementById('adminScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('pwInput').value = '';
+}
+
+// ====== 設定の読み込み・保存 ======
+function loadConfig() {
+  // config.jsのデフォルト値をベースに
+  const base = window.YMS_CONFIG || {};
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  config = saved || JSON.parse(JSON.stringify(base));
+
+  // フォームに反映
+  const t = config.theme || {};
+  document.getElementById('colorPrimary').value   = t.colorPrimary   || DEFAULT_COLORS.colorPrimary;
+  document.getElementById('colorSecondary').value = t.colorSecondary || DEFAULT_COLORS.colorSecondary;
+  document.getElementById('colorAccent').value    = t.colorAccent    || DEFAULT_COLORS.colorAccent;
+  document.getElementById('colorBg').value        = t.colorBg        || DEFAULT_COLORS.colorBg;
+  document.getElementById('colorSurface').value   = t.colorSurface   || DEFAULT_COLORS.colorSurface;
+  document.getElementById('colorText').value      = t.colorText      || DEFAULT_COLORS.colorText;
+
+  const fh = document.getElementById('fontHeading');
+  const fb = document.getElementById('fontBody');
+  if (t.fontHeading) setSelectValue(fh, t.fontHeading);
+  if (t.fontBody)    setSelectValue(fb, t.fontBody);
+
+  document.getElementById('soreosUrl').value = config.soreosUrl || '';
+
+  // 進捗
+  document.getElementById('currentAmount').value          = config.currentAmount || '';
+  document.getElementById('currentAmountUpdatedAt').value = config.currentAmountUpdatedAt || '';
+  updateAmountPreview();
+
+  // テキスト
+  const ct = config.content || {};
+  document.getElementById('heroTitle').value       = ct.heroTitle       || '';
+  document.getElementById('heroLead').value        = ct.heroLead        || '';
+  document.getElementById('goalAmount').value      = ct.goalAmount      || '5,000,000';
+  document.getElementById('aboutMain').value       = ct.aboutMain       || '';
+  document.getElementById('projectMain').value     = ct.projectMain     || '';
+  document.getElementById('producerMessage').value = ct.producerMessage || '';
+
+  buildRewardSettings();
+}
+
+function setSelectValue(select, value) {
+  for (const opt of select.options) {
+    if (opt.value === value) { select.value = value; return; }
+  }
+}
+
+function saveProgress() {
+  const raw = document.getElementById('currentAmount').value.trim().replace(/[,\s]/g, '');
+  const num = parseInt(raw, 10) || 0;
+  config.currentAmount = num;
+  config.currentAmountUpdatedAt = new Date().toISOString();
+  document.getElementById('currentAmountUpdatedAt').value = config.currentAmountUpdatedAt;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  updateAmountPreview();
+  showToast('進捗を保存しました');
+}
+
+function updateAmountPreview() {
+  const num = parseInt((document.getElementById('currentAmount').value || '0').replace(/[,\s]/g, ''), 10);
+  const el  = document.getElementById('amountPreview');
+  if (el) el.textContent = isNaN(num) ? '' : '表示: ¥' + num.toLocaleString('ja-JP');
+}
+
+async function fetchAmountFromSoreos() {
+  const url = document.getElementById('fetchSoreosUrl').value.trim();
+  if (!url) { alert('URLを入力してください'); return; }
+  const statusEl = document.getElementById('fetchStatus');
+  const btn      = document.getElementById('fetchBtn');
+  statusEl.style.display = 'block';
+  statusEl.textContent   = '取得中...';
+  btn.disabled           = true;
+
+  try {
+    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const res  = await fetch(proxyUrl);
+    const json = await res.json();
+    const html = json.contents || '';
+
+    // ソレオスのページから金額を抽出（複数パターン試行）
+    const patterns = [
+      /([0-9,]+)\s*円\s*(?:集まり|支援)/,
+      /支援総額[^0-9]*([0-9,]+)/,
+      /total[^0-9]*([0-9,]+)/i,
+      /現在[^0-9]*([0-9,]+)/,
+    ];
+    let found = null;
+    for (const pat of patterns) {
+      const m = html.match(pat);
+      if (m) { found = m[1].replace(/,/g, ''); break; }
+    }
+
+    if (found) {
+      document.getElementById('currentAmount').value = found;
+      updateAmountPreview();
+      statusEl.style.color   = 'var(--success)';
+      statusEl.textContent   = '取得成功: ¥' + parseInt(found).toLocaleString('ja-JP') + ' ※内容をご確認の上、保存してください';
+    } else {
+      statusEl.style.color   = 'var(--accent)';
+      statusEl.textContent   = '金額を自動抽出できませんでした。手動で入力してください（ページ構造が変わった可能性があります）。';
+    }
+  } catch(e) {
+    statusEl.style.color   = '#f87171';
+    statusEl.textContent   = '取得に失敗しました。手動で入力してください。';
+  }
+  btn.disabled = false;
+}
+
+function saveSettings() {
+  config.soreosUrl = document.getElementById('soreosUrl').value.trim();
+
+  // テキストコンテンツ
+  config.content = {
+    heroTitle:       document.getElementById('heroTitle').value.trim(),
+    heroLead:        document.getElementById('heroLead').value,
+    goalAmount:      document.getElementById('goalAmount').value.trim() || '5,000,000',
+    aboutMain:       document.getElementById('aboutMain').value,
+    projectMain:     document.getElementById('projectMain').value,
+    producerMessage: document.getElementById('producerMessage').value,
+  };
+
+  config.theme = {
+    colorPrimary:   document.getElementById('colorPrimary').value,
+    colorSecondary: document.getElementById('colorSecondary').value,
+    colorAccent:    document.getElementById('colorAccent').value,
+    colorBg:        document.getElementById('colorBg').value,
+    colorSurface:   document.getElementById('colorSurface').value,
+    colorBorder:    config.theme.colorBorder || '#2e2a50',
+    colorText:      document.getElementById('colorText').value,
+    colorTextMuted: config.theme.colorTextMuted || '#9d96c0',
+    fontHeading:    document.getElementById('fontHeading').value,
+    fontBody:       document.getElementById('fontBody').value,
+  };
+
+  // リワード設定を収集
+  for (const key of Object.keys(REWARD_LABELS)) {
+    config.rewards[key].visible    = document.getElementById('rw-visible-' + key)?.checked ?? true;
+    config.rewards[key].comingSoon = document.getElementById('rw-coming-' + key)?.checked ?? false;
+    config.rewards[key].periodText = document.getElementById('rw-period-' + key)?.value ?? '';
+  }
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  showToast('保存しました');
+}
+
+function resetColors() {
+  for (const [key, val] of Object.entries(DEFAULT_COLORS)) {
+    const el = document.getElementById(key);
+    if (el) el.value = val;
+  }
+  previewTheme();
+}
+
+// ====== リワード設定UI構築 ======
+function buildRewardSettings() {
+  const container = document.getElementById('rewardSettingsList');
+  container.innerHTML = '';
+  for (const [key, label] of Object.entries(REWARD_LABELS)) {
+    const rw = config.rewards[key] || {};
+    container.innerHTML += `
+      <div class="card" style="margin-bottom:12px">
+        <h3>${label}</h3>
+        <div class="reward-row" style="margin-bottom:8px">
+          <span class="reward-row-label">表示する</span>
+          <label class="toggle">
+            <input type="checkbox" id="rw-visible-${key}" ${rw.visible !== false ? 'checked' : ''}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="reward-row" style="margin-bottom:8px">
+          <span class="reward-row-label">「近日公開」として表示</span>
+          <label class="toggle">
+            <input type="checkbox" id="rw-coming-${key}" ${rw.comingSoon ? 'checked' : ''}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>公開期間テキスト（空白でも可）</label>
+          <input type="text" id="rw-period-${key}" value="${rw.periodText || ''}" placeholder="例：5月8日〜5月11日まで">
+        </div>
+      </div>
+    `;
+  }
+}
+
+// ====== セクション切り替え ======
+function switchSection(el) {
+  document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('section-' + el.dataset.section).classList.add('active');
+}
+
+// ====== 画像アップロード・カラー抽出 ======
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const preview = document.getElementById('imagePreview');
+      preview.src   = e.target.result;
+      preview.style.display = 'block';
+
+      const canvas  = document.getElementById('colorCanvas');
+      const ctx     = canvas.getContext('2d');
+      canvas.width  = 200;
+      canvas.height = Math.round(200 * img.height / img.width);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const colors    = extractDominantColors(imageData, 8);
+      showColorSwatches(colors);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function extractDominantColors(imageData, count = 8) {
+  const data    = imageData.data;
+  const colorMap = {};
+  const step    = 8; // 8ピクセルおきにサンプリング
+
+  for (let i = 0; i < data.length; i += 4 * step) {
+    const a = data[i + 3];
+    if (a < 100) continue;  // 透明ピクセルをスキップ
+
+    // 16段階に量子化
+    const r = Math.round(data[i]     / 16) * 16;
+    const g = Math.round(data[i + 1] / 16) * 16;
+    const b = Math.round(data[i + 2] / 16) * 16;
+
+    // 白・黒に近い色を除外
+    const brightness = (r + g + b) / 3;
+    if (brightness > 240 || brightness < 15) continue;
+
+    const key = `${r},${g},${b}`;
+    colorMap[key] = (colorMap[key] || 0) + 1;
+  }
+
+  return Object.entries(colorMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, count)
+    .map(([key]) => {
+      const [r, g, b] = key.split(',').map(Number);
+      return rgbToHex(r, g, b);
+    });
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+function showColorSwatches(colors) {
+  const container = document.getElementById('colorSwatches');
+  container.innerHTML = '';
+  colors.forEach(hex => {
+    const swatch = document.createElement('div');
+    swatch.className  = 'color-swatch';
+    swatch.style.background = hex;
+    swatch.title      = hex;
+    swatch.innerHTML  = `<span class="swatch-hex">${hex}</span>`;
+    swatch.addEventListener('click', () => {
+      container.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      swatch.classList.add('selected');
+      selectedSwatchColor = hex;
+      document.getElementById('selectedSwatchPreview').style.background = hex;
+    });
+    container.appendChild(swatch);
+  });
+
+  document.getElementById('extractedColors').style.display = 'block';
+}
+
+function applyExtractedColor() {
+  if (!selectedSwatchColor) { alert('カラーを選択してください'); return; }
+  const target = document.getElementById('colorTarget').value;
+  const input  = document.getElementById(target);
+  if (input) {
+    input.value = selectedSwatchColor;
+    previewTheme();
+    showToast(`${input.previousElementSibling?.textContent || target} に適用しました`);
+  }
+}
+
+// ====== リアルタイムプレビュー（管理画面自体のテーマ変更）======
+function previewTheme() {
+  // 管理画面内のカラー変数を更新（軽量プレビュー）
+  const root = document.documentElement;
+  root.style.setProperty('--primary',  document.getElementById('colorPrimary').value);
+}
+
+// ====== config.jsのエクスポート ======
+function exportConfig() {
+  saveSettings();
+
+  const c = config;
+  const ct = c.content || {};
+  const jsContent = `// youmenosay CF 設定ファイル
+// 管理画面(admin.html)から生成されました
+
+window.YMS_CONFIG = {
+  version: '1.2.0',
+
+  // ソレオスへのリンク
+  soreosUrl: ${JSON.stringify(c.soreosUrl || '')},
+
+  // 現在の支援総額
+  currentAmount: ${c.currentAmount || 0},
+  currentAmountUpdatedAt: ${JSON.stringify(c.currentAmountUpdatedAt || '')},
+
+  // テーマ設定
+  theme: {
+    colorPrimary:   ${JSON.stringify(c.theme.colorPrimary)},
+    colorSecondary: ${JSON.stringify(c.theme.colorSecondary)},
+    colorAccent:    ${JSON.stringify(c.theme.colorAccent)},
+    colorBg:        ${JSON.stringify(c.theme.colorBg)},
+    colorSurface:   ${JSON.stringify(c.theme.colorSurface)},
+    colorBorder:    ${JSON.stringify(c.theme.colorBorder || '#2e2a50')},
+    colorText:      ${JSON.stringify(c.theme.colorText)},
+    colorTextMuted: ${JSON.stringify(c.theme.colorTextMuted || '#9d96c0')},
+    fontHeading:    ${JSON.stringify(c.theme.fontHeading)},
+    fontBody:       ${JSON.stringify(c.theme.fontBody)},
+  },
+
+  // 編集可能テキスト
+  content: {
+    heroTitle:       ${JSON.stringify(ct.heroTitle || '')},
+    heroLead:        ${JSON.stringify(ct.heroLead || '')},
+    goalAmount:      ${JSON.stringify(ct.goalAmount || '5,000,000')},
+    aboutMain:       ${JSON.stringify(ct.aboutMain || '')},
+    projectMain:     ${JSON.stringify(ct.projectMain || '')},
+    producerMessage: ${JSON.stringify(ct.producerMessage || '')},
+  },
+
+  // リワード公開設定
+  rewards: {
+${Object.entries(c.rewards).map(([key, rw]) => `    ${key}: {
+      visible:    ${rw.visible !== false},
+      comingSoon: ${!!rw.comingSoon},
+      periodText: ${JSON.stringify(rw.periodText || '')},
+    }`).join(',\n')}
+  },
+};
+`;
+
+  const blob = new Blob([jsContent], { type: 'application/javascript' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'config.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('config.js をダウンロードしました');
+}
+
+// ====== プレビューを開く ======
+function openPreview() {
+  saveSettings();
+  window.open('index.html', '_blank');
+}
+
+// ====== トースト ======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+// ====== ドラッグ&ドロップ ======
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const input = document.getElementById('imageInput');
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    handleImageUpload({ target: input });
+  }
+});
+
+// ====== 画像管理 ======
+const IMG_STORAGE_KEY = 'yms_admin_images';
+let imgData = {
+  hero: '', comparison: '',
+  rewardImages: [], projectImages: [],
+  members: { kano: '', sari: '', reina: '', haru: '', yuka: '' },
+  rewardCards: {},
+};
+
+function loadImgData() {
+  const saved = localStorage.getItem(IMG_STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      imgData = Object.assign(imgData, parsed);
+      imgData.members     = Object.assign({ kano:'', sari:'', reina:'', haru:'', yuka:'' }, parsed.members || {});
+      imgData.rewardCards = Object.assign({}, parsed.rewardCards || {});
+    } catch(e) {}
+  }
+  // UIに反映
+  if (imgData.hero)       showImgThumb('hero',       imgData.hero);
+  if (imgData.comparison) showImgThumb('comparison',  imgData.comparison);
+
+  // メンバー写真
+  MEMBER_KEYS.forEach(key => {
+    if (imgData.members[key]) showMemberThumb(key, imgData.members[key]);
+  });
+
+  // リターンカード画像
+  CARD_KEYS.forEach(key => {
+    if (imgData.rewardCards[key]) showCardThumb(key, imgData.rewardCards[key]);
+  });
+
+  renderRewardImgList();
+  renderProjectImgList();
+}
+
+// 画像をcanvasで圧縮してbase64に変換
+function compressImage(file, maxW, quality, cb) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      const cv  = document.createElement('canvas');
+      cv.width  = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(cv.toDataURL('image/jpeg', quality));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImgUpload(type, event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  compressImage(file, 2048, 0.82, base64 => {
+    imgData[type] = base64;
+    showImgThumb(type, base64);
+    showToast('画像を読み込みました（保存ボタンで確定）');
+  });
+}
+
+function showImgThumb(type, src) {
+  const wrapId = type === 'hero' ? 'heroThumbWrap' : 'compThumbWrap';
+  const imgId  = type === 'hero' ? 'heroThumb'     : 'compThumb';
+  const wrap = document.getElementById(wrapId);
+  const thumb = document.getElementById(imgId);
+  if (!wrap || !thumb) return;
+  thumb.src = src;
+  wrap.classList.add('has-image');
+}
+
+function removeImg(type) {
+  imgData[type] = '';
+  const wrapId = type === 'hero' ? 'heroThumbWrap' : 'compThumbWrap';
+  const wrap = document.getElementById(wrapId);
+  if (wrap) wrap.classList.remove('has-image');
+  showToast('画像を削除しました');
+}
+
+// メンバー写真
+function handleMemberImgUpload(key, event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  compressImage(file, 800, 0.85, base64 => {
+    imgData.members[key] = base64;
+    showMemberThumb(key, base64);
+    showToast('画像を読み込みました（保存ボタンで確定）');
+  });
+}
+function showMemberThumb(key, src) {
+  const wrap  = document.getElementById('memberThumbWrap_' + key);
+  const thumb = document.getElementById('memberThumb_' + key);
+  if (!wrap || !thumb) return;
+  thumb.src = src;
+  wrap.classList.add('has-image');
+}
+function removeMemberImg(key) {
+  imgData.members[key] = '';
+  const wrap = document.getElementById('memberThumbWrap_' + key);
+  if (wrap) wrap.classList.remove('has-image');
+  showToast('画像を削除しました');
+}
+
+// リターンカード画像
+function handleCardImgUpload(key, event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  compressImage(file, 800, 0.82, base64 => {
+    imgData.rewardCards[key] = base64;
+    showCardThumb(key, base64);
+    showToast('画像を読み込みました（保存ボタンで確定）');
+  });
+}
+function showCardThumb(key, src) {
+  const wrap  = document.getElementById('cardThumbWrap_' + key);
+  const thumb = document.getElementById('cardThumb_' + key);
+  if (!wrap || !thumb) return;
+  thumb.src = src;
+  wrap.classList.add('has-image');
+}
+function removeCardImg(key) {
+  imgData.rewardCards[key] = '';
+  const wrap = document.getElementById('cardThumbWrap_' + key);
+  if (wrap) wrap.classList.remove('has-image');
+  showToast('画像を削除しました');
+}
+
+// プロジェクト説明画像
+function addProjectImg(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  compressImage(file, 1200, 0.82, base64 => {
+    imgData.projectImages.push({ label: '', data: base64 });
+    renderProjectImgList();
+    event.target.value = '';
+    showToast('画像を追加しました（保存ボタンで確定）');
+  });
+}
+function removeProjectImg(index) {
+  imgData.projectImages.splice(index, 1);
+  renderProjectImgList();
+}
+function updateProjectImgLabel(index, value) {
+  if (imgData.projectImages[index]) imgData.projectImages[index].label = value;
+}
+function renderProjectImgList() {
+  const list = document.getElementById('projectImgList');
+  if (!list) return;
+  if (!imgData.projectImages || imgData.projectImages.length === 0) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;padding:8px 0;">まだ画像がありません。下のエリアから追加してください。</p>';
+    return;
+  }
+  list.innerHTML = imgData.projectImages.map((item, i) => `
+    <div class="reward-img-item">
+      <img src="${item.data}" alt="${item.label || '画像' + (i+1)}">
+      <input type="text" value="${item.label}" placeholder="キャプション（例：リハーサル風景）"
+             oninput="updateProjectImgLabel(${i}, this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeProjectImg(${i})">削除</button>
+    </div>
+  `).join('');
+}
+
+function addRewardImg(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  compressImage(file, 1200, 0.82, base64 => {
+    imgData.rewardImages.push({ label: '', data: base64 });
+    renderRewardImgList();
+    // inputをリセット
+    event.target.value = '';
+    showToast('画像を追加しました（保存ボタンで確定）');
+  });
+}
+
+function removeRewardImg(index) {
+  imgData.rewardImages.splice(index, 1);
+  renderRewardImgList();
+}
+
+function updateRewardImgLabel(index, value) {
+  if (imgData.rewardImages[index]) imgData.rewardImages[index].label = value;
+}
+
+function renderRewardImgList() {
+  const list = document.getElementById('rewardImgList');
+  if (!list) return;
+  if (imgData.rewardImages.length === 0) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;padding:8px 0;">まだ画像がありません。下のエリアから追加してください。</p>';
+    return;
+  }
+  list.innerHTML = imgData.rewardImages.map((item, i) => `
+    <div class="reward-img-item">
+      <img src="${item.data}" alt="${item.label || '画像' + (i+1)}">
+      <input type="text" value="${item.label}" placeholder="説明テキスト（例：在宅プラン グッズ一覧）"
+             oninput="updateRewardImgLabel(${i}, this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeRewardImg(${i})">削除</button>
+    </div>
+  `).join('');
+}
+
+function saveImgSettings() {
+  // ラベルを入力欄から最新値で更新
+  document.querySelectorAll('#rewardImgList .reward-img-item input').forEach((input, i) => {
+    if (imgData.rewardImages[i]) imgData.rewardImages[i].label = input.value;
+  });
+  try {
+    localStorage.setItem(IMG_STORAGE_KEY, JSON.stringify(imgData));
+    showToast('画像設定を保存しました');
+  } catch(e) {
+    alert('保存に失敗しました。画像のサイズが大きすぎる可能性があります。画像を減らすか、より小さいサイズでお試しください。');
+  }
+}
+
+// images-data.js のエクスポート
+function exportImages() {
+  // 最新のラベルを反映
+  document.querySelectorAll('#rewardImgList .reward-img-item input').forEach((input, i) => {
+    if (imgData.rewardImages[i]) imgData.rewardImages[i].label = input.value;
+  });
+
+  const content = `// youmenosay CF 画像データファイル
+// 管理画面(admin.html)の「画像データをダウンロード」から生成されました
+
+window.YMS_IMAGES = {
+  hero: ${JSON.stringify(imgData.hero || '')},
+  comparison: ${JSON.stringify(imgData.comparison || '')},
+  rewardImages: ${JSON.stringify(imgData.rewardImages || [], null, 2)},
+};
+`;
+
+  const blob = new Blob([content], { type: 'application/javascript' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'images-data.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('images-data.js をダウンロードしました');
+}
+
+// ====== ドラッグ&ドロップ（画像管理エリア） ======
+['heroUploadArea', 'compUploadArea', 'rewardAddArea'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('dragover',  e => { e.preventDefault(); el.classList.add('drag-over'); });
+  el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const inputId = { heroUploadArea: 'heroImageInput', compUploadArea: 'compImageInput', rewardAddArea: 'rewardImgInput' }[id];
+    const input   = document.getElementById(inputId);
+    if (!input) return;
+    const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+    input.dispatchEvent(new Event('change'));
+  });
+});
+
+// ====== config.jsを読み込む ======
+const configScript = document.createElement('script');
+configScript.src = 'config.js';
+configScript.onload = () => { /* loadConfigはログイン後に呼ばれる */ };
+document.head.appendChild(configScript);
+</script>
+</body>
+</html>
