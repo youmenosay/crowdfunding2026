@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>管理画面 | youmenosay CF</title>
+  <script src="config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -193,6 +194,8 @@
       <div class="admin-nav-item"        data-section="images"   onclick="switchSection(this)">画像管理</div>
       <div class="admin-nav-item"        data-section="schedule" onclick="switchSection(this)">スケジュール</div>
       <div class="admin-nav-item"        data-section="rewardmgr" onclick="switchSection(this)">リワード管理</div>
+      <div class="admin-nav-item"        data-section="contentblocks" onclick="switchSection(this)">コンテンツブロック</div>
+      <div class="admin-nav-item"        data-section="memberprofiles" onclick="switchSection(this)">メンバープロフィール</div>
       <div class="admin-nav-item"        data-section="soreos"   onclick="switchSection(this)">ソレオスリンク</div>
     </nav>
 
@@ -472,6 +475,30 @@
         <button class="btn btn-primary" onclick="saveSettings()">リワードを保存</button>
       </div>
 
+      <!-- ===== コンテンツブロック ===== -->
+      <div class="admin-section" id="section-contentblocks">
+        <h2 class="section-title">コンテンツブロック管理</h2>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:16px;">
+          各セクションの上部・下部に画像＋テキストブロックを挿入できます。<br>
+          追加後「設定を保存」→「config.js DL」「images-data.js DL」でダウンロードして差し替えてください。
+        </p>
+        <div id="contentBlockEditorList"></div>
+        <button class="btn btn-outline" onclick="addContentBlock()" style="margin-bottom:16px">＋ ブロックを追加</button>
+        <br>
+        <button class="btn btn-primary" onclick="saveImgSettings();saveSettings()">ブロックを保存（設定＋画像）</button>
+      </div>
+
+      <!-- ===== メンバープロフィール ===== -->
+      <div class="admin-section" id="section-memberprofiles">
+        <h2 class="section-title">メンバープロフィール編集</h2>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:20px;">
+          各メンバーのプロフィール情報を設定します。サイト上でメンバーカードをクリックすると表示されます。<br>
+          保存後「config.js DL」でダウンロードしてください。
+        </p>
+        <div id="memberProfilesEditor"></div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:8px">プロフィールを保存</button>
+      </div>
+
       <!-- ===== ソレオスリンク ===== -->
       <div class="admin-section" id="section-soreos">
         <h2 class="section-title">ソレオスリンク設定</h2>
@@ -491,7 +518,8 @@
 
 <script>
 // ====== 定数 ======
-const PASSWORD    = 'youmenosay2257';
+const PASSWORD      = 'youmenosay2257';
+const ADMIN_VERSION = '1.3.1';  // テーマ変更時にバンプ
 const STORAGE_KEY = 'yms_admin_config';
 const IMG_KEY     = 'yms_admin_images';
 
@@ -524,7 +552,7 @@ const DEFAULT_COLORS = {
 
 // ====== 状態 ======
 let config = null;
-let imgData = { hero:'', heroAbove:'', heroBelow:'', comparison:'', rewardImages:[], projectImages:[], members:{}, rewardCards:{}, slots:{} };
+let imgData = { hero:'', heroAbove:'', heroBelow:'', comparison:'', rewardImages:[], projectImages:[], members:{}, rewardCards:{}, slots:{}, contentBlockImages:{} };
 let selectedSwatchColor = null;
 let extractedColorsList = [];
 
@@ -553,9 +581,14 @@ function logout() {
 function loadConfig() {
   const base  = window.YMS_CONFIG || {};
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-  config = saved || JSON.parse(JSON.stringify(base));
-  if (!config.rewardsData) config.rewardsData = JSON.parse(JSON.stringify(base.rewardsData || []));
-  if (!config.schedule)    config.schedule    = JSON.parse(JSON.stringify(base.schedule    || []));
+  // バージョンが変わっている場合は config.js の値を優先（テーマ崩れ防止）
+  config = (saved && saved._adminVersion === ADMIN_VERSION)
+    ? saved
+    : JSON.parse(JSON.stringify(base));
+  if (!config.rewardsData)    config.rewardsData    = JSON.parse(JSON.stringify(base.rewardsData    || []));
+  if (!config.schedule)        config.schedule        = JSON.parse(JSON.stringify(base.schedule        || []));
+  if (!config.contentBlocks)   config.contentBlocks   = JSON.parse(JSON.stringify(base.contentBlocks   || []));
+  if (!config.memberProfiles)  config.memberProfiles  = JSON.parse(JSON.stringify(base.memberProfiles  || {}));
   if (!config.heroTypography) config.heroTypography = { titleSize:'3.5rem', leadSize:'1.05rem' };
   if (!config.content)     config.content     = {};
   if (!config.theme)       config.theme       = {};
@@ -588,6 +621,8 @@ function loadConfig() {
 
   buildScheduleUI();
   buildRewardsUI();
+  buildContentBlocksUI();
+  buildMemberProfilesUI();
 }
 
 function setSelectValue(sel, val) {
@@ -629,7 +664,12 @@ function saveSettings() {
   config.schedule = collectSchedule();
   // リワード収集
   config.rewardsData = collectRewards();
+  // コンテンツブロック収集
+  config.contentBlocks = collectContentBlocks();
+  // メンバープロフィール収集
+  config.memberProfiles = collectMemberProfiles();
 
+  config._adminVersion = ADMIN_VERSION;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   showToast('保存しました');
 }
@@ -877,6 +917,197 @@ function collectRewards() {
   }));
 }
 
+// ====== コンテンツブロックCRUD ======
+let contentBlocks = [];
+let cbNextId = 1;
+
+const CB_POSITIONS = {
+  'about-top':      'グループ紹介 上部',
+  'about-bottom':   'グループ紹介 下部',
+  'project-top':    'プロジェクト 上部',
+  'project-bottom': 'プロジェクト 下部',
+  'milestone-top':  'マイルストーン 上部',
+  'milestone-bottom': 'マイルストーン 下部',
+  'rewards-top':    'リターン 上部',
+  'rewards-bottom': 'リターン 下部',
+};
+const CB_TYPES = {
+  'image-left':  '画像左・テキスト右',
+  'image-right': '画像右・テキスト左',
+  'image-top':   '画像上・テキスト下',
+  'image-only':  '画像のみ',
+  'text-only':   'テキストのみ',
+};
+
+function buildContentBlocksUI() {
+  contentBlocks = JSON.parse(JSON.stringify(config.contentBlocks || []));
+  cbNextId = contentBlocks.length + 1;
+  renderContentBlocksUI();
+}
+
+function renderContentBlocksUI() {
+  const list = document.getElementById('contentBlockEditorList');
+  if (!list) return;
+  if (!contentBlocks.length) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:0.82rem;padding:8px 0">まだブロックがありません。「＋ ブロックを追加」で追加してください。</p>';
+    return;
+  }
+  list.innerHTML = contentBlocks.map((b, i) => {
+    const posLabel  = CB_POSITIONS[b.position] || b.position;
+    const typeLabel = CB_TYPES[b.type]         || b.type;
+    const imgSrc    = (imgData.contentBlockImages || {})[b.id] || '';
+    const posOpts   = Object.entries(CB_POSITIONS).map(([v,l]) => `<option value="${v}" ${b.position===v?'selected':''}>${l}</option>`).join('');
+    const typeOpts  = Object.entries(CB_TYPES).map(([v,l]) => `<option value="${v}" ${b.type===v?'selected':''}>${l}</option>`).join('');
+    return `
+      <div class="schedule-editor-item${b._open ? ' open' : ''}" id="cb-editor-${i}">
+        <div class="item-header" onclick="toggleCb(${i})">
+          <div class="item-title">[${posLabel}] ${esc(b.heading||'（見出し未設定）')}</div>
+          <div class="item-actions">
+            <button class="btn btn-outline btn-xs" onclick="event.stopPropagation();moveCb(${i},-1)">↑</button>
+            <button class="btn btn-outline btn-xs" onclick="event.stopPropagation();moveCb(${i}, 1)">↓</button>
+            <button class="btn btn-danger btn-xs"  onclick="event.stopPropagation();removeCb(${i})">削除</button>
+          </div>
+        </div>
+        <div class="item-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>ブロックID（英数字・アンダースコア）</label>
+              <input type="text" value="${esc(b.id||'')}" onchange="contentBlocks[${i}].id=this.value;renderContentBlocksUI()">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:auto;padding-bottom:16px">
+              <label class="toggle"><input type="checkbox" ${b.visible!==false?'checked':''} onchange="contentBlocks[${i}].visible=this.checked"><span class="toggle-slider"></span></label>
+              <span style="font-size:0.82rem;color:var(--muted)">表示する</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>挿入位置</label>
+              <select onchange="contentBlocks[${i}].position=this.value">${posOpts}</select>
+            </div>
+            <div class="form-group">
+              <label>レイアウト</label>
+              <select onchange="contentBlocks[${i}].type=this.value">${typeOpts}</select>
+            </div>
+          </div>
+          <div class="form-group"><label>見出し</label><input type="text" value="${esc(b.heading||'')}" onchange="contentBlocks[${i}].heading=this.value"></div>
+          <div class="form-group"><label>本文（**太字**対応）</label><textarea rows="4" onchange="contentBlocks[${i}].text=this.value">${esc(b.text||'')}</textarea></div>
+          <div class="form-group">
+            <label>画像</label>
+            <div class="img-upload-area" style="padding:14px"><input type="file" accept="image/*" onchange="handleCbImgUpload('${esc(b.id)}',event)"><p><span>クリック</span>してアップロード</p></div>
+            ${imgSrc ? `<div class="img-thumb-wrap has-image" id="cbThumbWrap_${i}"><img class="img-thumb" src="${imgSrc}" alt=""><button class="img-remove-btn" onclick="removeCbImg('${esc(b.id)}',${i})">×</button></div>` : `<div class="img-thumb-wrap" id="cbThumbWrap_${i}"><img class="img-thumb" src="" alt=""><button class="img-remove-btn" onclick="removeCbImg('${esc(b.id)}',${i})">×</button></div>`}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleCb(i) { contentBlocks[i]._open = !contentBlocks[i]._open; renderContentBlocksUI(); }
+
+function addContentBlock() {
+  const newId = 'cb_' + Date.now();
+  contentBlocks.push({ id: newId, position: 'about-bottom', type: 'image-left', heading: '', text: '', visible: true, _open: true });
+  renderContentBlocksUI();
+}
+
+function removeCb(i) {
+  if (!confirm('このブロックを削除しますか？')) return;
+  contentBlocks.splice(i, 1); renderContentBlocksUI();
+}
+
+function moveCb(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= contentBlocks.length) return;
+  [contentBlocks[i], contentBlocks[j]] = [contentBlocks[j], contentBlocks[i]];
+  renderContentBlocksUI();
+}
+
+function collectContentBlocks() {
+  return contentBlocks.map(({ _open, ...b }) => b);
+}
+
+function handleCbImgUpload(id, event) {
+  const file = event.target.files[0]; if (!file) return;
+  compressImage(file, 1400, 0.85, base64 => {
+    if (!imgData.contentBlockImages) imgData.contentBlockImages = {};
+    imgData.contentBlockImages[id] = base64;
+    // サムネ更新
+    const idx = contentBlocks.findIndex(b => b.id === id);
+    if (idx >= 0) {
+      const wrap = document.getElementById('cbThumbWrap_' + idx);
+      if (wrap) { wrap.querySelector('img').src = base64; wrap.classList.add('has-image'); }
+    }
+    showToast('画像を読み込みました（保存ボタンで確定）');
+  });
+}
+
+function removeCbImg(id, i) {
+  if (imgData.contentBlockImages) imgData.contentBlockImages[id] = '';
+  const wrap = document.getElementById('cbThumbWrap_' + i);
+  if (wrap) wrap.classList.remove('has-image');
+}
+
+// ====== メンバープロフィールCRUD ======
+const MEMBER_ORDER = ['kano','sari','reina','haru','yuka'];
+
+function buildMemberProfilesUI() {
+  const editor = document.getElementById('memberProfilesEditor');
+  if (!editor) return;
+  editor.innerHTML = MEMBER_ORDER.map(key => {
+    const p = (config.memberProfiles || {})[key] || {};
+    return `
+      <div class="card" style="margin-bottom:16px">
+        <h3 style="margin-bottom:14px">${MEMBER_NAMES[key] || key} <span style="font-size:0.8rem;color:var(--muted)">（${key}）</span></h3>
+        <div class="form-row">
+          <div class="form-group"><label>表示名（フルネーム）</label><input type="text" id="mp_fullName_${key}" value="${esc(p.fullName||'')}"></div>
+          <div class="form-group"><label>ニックネーム</label><input type="text" id="mp_nickname_${key}" value="${esc(p.nickname||'')}"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>誕生日</label><input type="text" id="mp_birthday_${key}" placeholder="例：1月1日" value="${esc(p.birthday||'')}"></div>
+          <div class="form-group"><label>出身地</label><input type="text" id="mp_birthplace_${key}" placeholder="例：東京都" value="${esc(p.birthplace||'')}"></div>
+        </div>
+        <div class="form-group">
+          <label>プロフィール文（**太字**対応）</label>
+          <textarea id="mp_description_${key}" rows="4" placeholder="メンバーの紹介文...">${esc(p.description||'')}</textarea>
+        </div>
+        <div class="form-group">
+          <label>得意なこと・スキル（カンマ区切り）</label>
+          <input type="text" id="mp_skills_${key}" placeholder="例：作詞,ギター,デザイン" value="${esc(p.skills||'')}">
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>X（Twitter）URL</label><input type="url" id="mp_twitter_${key}" placeholder="https://x.com/..." value="${esc(p.twitter||'')}"></div>
+          <div class="form-group"><label>Instagram URL</label><input type="url" id="mp_instagram_${key}" placeholder="https://instagram.com/..." value="${esc(p.instagram||'')}"></div>
+        </div>
+        <div class="form-group">
+          <label>テーマカラー（プロフィール装飾用）</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="color" id="mp_color_${key}" value="${esc(p.color||'#ff5dae')}" style="width:48px;height:36px;padding:2px">
+            <span style="font-size:0.78rem;color:var(--muted)">カードやモーダルのアクセントカラー</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function collectMemberProfiles() {
+  const profiles = {};
+  MEMBER_ORDER.forEach(key => {
+    profiles[key] = {
+      fullName:   document.getElementById('mp_fullName_'   + key)?.value.trim() || '',
+      nickname:   document.getElementById('mp_nickname_'   + key)?.value.trim() || '',
+      birthday:   document.getElementById('mp_birthday_'   + key)?.value.trim() || '',
+      birthplace: document.getElementById('mp_birthplace_' + key)?.value.trim() || '',
+      description: document.getElementById('mp_description_' + key)?.value || '',
+      skills:     document.getElementById('mp_skills_'     + key)?.value.trim() || '',
+      twitter:    document.getElementById('mp_twitter_'    + key)?.value.trim() || '',
+      instagram:  document.getElementById('mp_instagram_'  + key)?.value.trim() || '',
+      color:      document.getElementById('mp_color_'      + key)?.value || '#ff5dae',
+    };
+  });
+  return profiles;
+}
+
 // ====== セクション切り替え ======
 function switchSection(el) {
   document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
@@ -1000,6 +1231,7 @@ function loadImgData() {
         members:     Object.assign({ kano:'', sari:'', reina:'', haru:'', yuka:'' }, p.members || {}),
         rewardCards: Object.assign({}, p.rewardCards || {}),
         slots:       Object.assign({ aboutBanner:'', projectTop:'', projectBottom:'', milestoneBanner:'', scheduleBanner:'' }, p.slots || {}),
+        contentBlockImages: Object.assign({}, p.contentBlockImages || {}),
       };
     } catch(e) {}
   }
@@ -1180,9 +1412,10 @@ function exportConfig() {
   const ht = c.heroTypography || {};
 
   // scheduleをシリアライズ
-  const scheduleSer = JSON.stringify(c.schedule || [], null, 4).replace(/^/gm, '  ').trimStart();
-  // rewardsDataをシリアライズ
-  const rewardsSer  = JSON.stringify(c.rewardsData || [], null, 4).replace(/^/gm, '  ').trimStart();
+  const scheduleSer     = JSON.stringify(c.schedule      || [], null, 4).replace(/^/gm, '  ').trimStart();
+  const rewardsSer      = JSON.stringify(c.rewardsData   || [], null, 4).replace(/^/gm, '  ').trimStart();
+  const cbSer           = JSON.stringify(c.contentBlocks || [], null, 4).replace(/^/gm, '  ').trimStart();
+  const memberProfSer   = JSON.stringify(c.memberProfiles|| {}, null, 4).replace(/^/gm, '  ').trimStart();
 
   const jsContent =
 `// youmenosay CF 設定ファイル v1.3
@@ -1226,6 +1459,10 @@ window.YMS_CONFIG = {
   schedule: ${scheduleSer},
 
   rewardsData: ${rewardsSer},
+
+  contentBlocks: ${cbSer},
+
+  memberProfiles: ${memberProfSer},
 };
 `;
   dlFile('config.js', jsContent);
@@ -1282,6 +1519,13 @@ window.YMS_IMAGES = {
     hojin_matsu1000:    ${JSON.stringify(rc.hojin_matsu1000    || '')},
   },
 
+  contentBlockImages: (function() {
+    const ci = imgData.contentBlockImages || {};
+    const entries = Object.entries(ci).filter(([,v]) => v);
+    if (!entries.length) return '{}';
+    return '{\n' + entries.map(([k,v]) => '    ' + JSON.stringify(k) + ': ' + JSON.stringify(v) + ',').join('\n') + '\n  }';
+  })(),
+
   slots: {
     aboutBanner:     ${JSON.stringify(sl.aboutBanner     || '')},
     projectTop:      ${JSON.stringify(sl.projectTop      || '')},
@@ -1330,11 +1574,7 @@ uploadArea.addEventListener('drop', e => {
   }
 });
 
-// config.js読み込み
-const configScript = document.createElement('script');
-configScript.src = 'config.js';
-configScript.onload = () => {};
-document.head.appendChild(configScript);
+// config.js は head で読み込み済み
 </script>
 </body>
 </html>

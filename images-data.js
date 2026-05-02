@@ -49,4 +49,7 @@ window.YMS_IMAGES = {
     milestoneBanner: '',
     scheduleBanner:  '',
   },
+
+  // コンテンツブロック画像（管理画面で追加されたブロックのid → base64）
+  contentBlockImages: {},
 };

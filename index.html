@@ -76,6 +76,7 @@
 <!-- ===== ABOUT ===== -->
 <section id="about" class="section">
   <div class="container">
+    <div class="cb-slot" id="cb-about-top"></div>
     <div class="section-header fade-in">
       <span class="section-en">ABOUT</span>
       <h2 class="section-ja">はじめに</h2>
@@ -97,35 +98,35 @@
       <div class="members-box">
         <h3>メンバー紹介</h3>
         <div class="member-cards">
-          <div class="member-card">
+          <div class="member-card" role="button" tabindex="0" onclick="openMemberModal('kano')">
             <div class="member-avatar" data-member="kano">可</div>
             <div class="member-info">
               <span class="member-name">北郷可恩</span>
               <span class="member-nick">きゃのち</span>
             </div>
           </div>
-          <div class="member-card">
+          <div class="member-card" role="button" tabindex="0" onclick="openMemberModal('sari')">
             <div class="member-avatar" data-member="sari">さ</div>
             <div class="member-info">
               <span class="member-name">雪乃さり</span>
               <span class="member-nick">さりちゃん</span>
             </div>
           </div>
-          <div class="member-card">
+          <div class="member-card" role="button" tabindex="0" onclick="openMemberModal('reina')">
             <div class="member-avatar" data-member="reina">れ</div>
             <div class="member-info">
               <span class="member-name">雨宮れいな</span>
               <span class="member-nick">れーにゃ</span>
             </div>
           </div>
-          <div class="member-card">
+          <div class="member-card" role="button" tabindex="0" onclick="openMemberModal('haru')">
             <div class="member-avatar" data-member="haru">は</div>
             <div class="member-info">
               <span class="member-name">ねむいのはる</span>
               <span class="member-nick">ねむちゃん</span>
             </div>
           </div>
-          <div class="member-card">
+          <div class="member-card" role="button" tabindex="0" onclick="openMemberModal('yuka')">
             <div class="member-avatar" data-member="yuka">優</div>
             <div class="member-info">
               <span class="member-name">陽葵優叶</span>
@@ -135,12 +136,14 @@
         </div>
       </div>
     </div>
+    <div class="cb-slot" id="cb-about-bottom"></div>
   </div>
 </section>
 
 <!-- ===== PROJECT ===== -->
 <section id="project" class="section section-alt">
   <div class="container">
+    <div class="cb-slot" id="cb-project-top"></div>
     <div class="section-header fade-in">
       <span class="section-en">PROJECT</span>
       <h2 class="section-ja">本プロジェクトで実現したいこと</h2>
@@ -195,12 +198,14 @@
         </div>
       </div>
     </div>
+    <div class="cb-slot" id="cb-project-bottom"></div>
   </div>
 </section>
 
 <!-- ===== MILESTONE ===== -->
 <section id="milestone" class="section">
   <div class="container">
+    <div class="cb-slot" id="cb-milestone-top"></div>
     <div class="section-header fade-in">
       <span class="section-en">MILESTONE</span>
       <h2 class="section-ja">マイルストーン</h2>
@@ -299,12 +304,14 @@
       </div>
     </div>
     <p class="milestone-note fade-in">※ All in方式を採用。目標金額を達成せずに終了した場合でもプロジェクトは実施されます。</p>
+    <div class="cb-slot" id="cb-milestone-bottom"></div>
   </div>
 </section>
 
 <!-- ===== REWARDS ===== -->
 <section id="rewards" class="section section-alt">
   <div class="container">
+    <div class="cb-slot" id="cb-rewards-top"></div>
     <div class="section-header fade-in">
       <span class="section-en">RETURNS</span>
       <h2 class="section-ja">リターン一覧</h2>
@@ -327,6 +334,7 @@
       <p>すべてのリターンはソレオスでご購入いただけます</p>
       <a href="#" class="btn btn-primary btn-large soreos-link">ソレオスで支援する →</a>
     </div>
+    <div class="cb-slot" id="cb-rewards-bottom"></div>
   </div>
 </section>
 
@@ -395,6 +403,25 @@
     <p class="footer-copy">&copy; 2025 youmenosay All Rights Reserved.</p>
   </div>
 </footer>
+
+
+<!-- ===== MEMBER MODAL ===== -->
+<div class="member-modal-overlay" id="memberModal" aria-hidden="true" onclick="closeMemberModal(event)">
+  <div class="member-modal" role="dialog" aria-modal="true" aria-labelledby="mmFullName">
+    <button class="member-modal-close" onclick="closeMemberModal()" aria-label="閉じる">×</button>
+    <div class="member-modal-photo" id="mmPhoto">
+      <div class="mm-initial" id="mmInitial"></div>
+    </div>
+    <div class="member-modal-body">
+      <p class="mm-fullname" id="mmFullName"></p>
+      <p class="mm-nickname" id="mmNickname"></p>
+      <dl class="mm-details" id="mmDetails"></dl>
+      <div class="mm-description" id="mmDescription"></div>
+      <div class="mm-skills" id="mmSkills"></div>
+      <div class="mm-sns" id="mmSns"></div>
+    </div>
+  </div>
+</div>
 
 <script src="main.js"></script>
 </body>

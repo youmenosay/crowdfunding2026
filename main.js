@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSchedule();
   renderRewards();
   applyRewardImages();
+  renderContentBlocks();
   applySoreosLinks();   // must run after renderRewards() creates .soreos-link elements
   initNav();
   initParticles();
@@ -244,28 +245,28 @@ function applyProgress() {
   });
 }
 
-// ── スケジュール動的レンダリング ─────────────────────
+// ── スケジュール動的レンダリング（タイムラインカード）──────
 function renderSchedule() {
   const schedule = (window.YMS_CONFIG.schedule) || [];
   const container = document.getElementById('scheduleTimeline');
   if (!container) return;
 
   if (schedule.length === 0) {
-    container.innerHTML = '<p style="text-align:center;color:var(--color-text-muted)">スケジュールはまもなく公開予定です</p>';
+    container.innerHTML = '<p style="text-align:center;color:var(--color-text-muted);padding:24px 0">スケジュールはまもなく公開予定です</p>';
     return;
   }
 
   container.innerHTML = schedule.map(item => `
-    <div class="schedule-item${item.highlight ? ' highlight' : ''}" data-date="${item.date}" data-sid="${item.id}">
-      <div class="schedule-date">${item.dateLabel}</div>
-      <div class="schedule-content">
+    <div class="schedule-item fade-in${item.highlight ? ' highlight' : ''}" data-date="${item.date}" data-sid="${item.id}">
+      <div class="schedule-dot"></div>
+      <div class="schedule-card">
+        <div class="schedule-date">${escHtml(item.dateLabel)}</div>
         <h4>${escHtml(item.title)}</h4>
         ${item.description ? `<p>${escHtml(item.description).replace(/\n/g, '<br>')}</p>` : ''}
       </div>
     </div>
   `).join('');
 
-  // 今日マーカー
   applyScheduleToday();
 }
 
@@ -273,7 +274,7 @@ function escHtml(str) {
   return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── スケジュール「今日」マーカー ─────────────────────
+// ── スケジュール「今日/次のイベント」マーカー ────────
 function applyScheduleToday() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -301,10 +302,129 @@ function applyScheduleToday() {
     target.classList.add('schedule-today');
     const label = document.createElement('div');
     label.className   = 'schedule-today-label';
-    label.textContent = todayItem ? '⭐ 本日！' : '⭐ 次のイベント';
-    target.querySelector('.schedule-content')?.prepend(label);
+    label.textContent = todayItem ? '⭐ 本日開催！' : '⭐ 次のイベント';
+    target.querySelector('.schedule-card')?.prepend(label);
   }
 }
+
+// ── コンテンツブロック ─────────────────────────────
+function renderContentBlocks() {
+  const blocks = (window.YMS_CONFIG.contentBlocks || []).filter(b => b.visible !== false);
+  if (!blocks.length) return;
+
+  const imgs = (window.YMS_IMAGES || {}).contentBlockImages || {};
+
+  // altナンバリング（偶数/奇数で背景を交互に）
+  let altCount = 0;
+
+  blocks.forEach(block => {
+    const slot = document.getElementById('cb-' + block.position);
+    if (!slot) return;
+
+    const imgSrc   = imgs[block.id] || '';
+    const hasImg   = !!imgSrc;
+    const hasText  = !!(block.heading || block.text);
+    const type     = block.type || 'image-left';
+
+    const imgHtml  = hasImg
+      ? `<figure class="cb-img fade-in"><img src="${imgSrc}" alt="${escHtml(block.heading || '')}" loading="lazy"></figure>`
+      : '';
+    const textHtml = hasText
+      ? `<div class="cb-text fade-in">
+          ${block.heading ? `<h3>${parseBold(escHtml(block.heading))}</h3>` : ''}
+          ${block.text    ? `<p>${parseBold(escHtml(block.text))}</p>`      : ''}
+         </div>`
+      : '';
+
+    let innerContent = '';
+    if (type === 'image-only')  innerContent = imgHtml;
+    else if (type === 'text-only') innerContent = textHtml;
+    else innerContent = imgHtml + textHtml;
+
+    const isAlt = (altCount++ % 2 === 1);
+    const section = document.createElement('section');
+    section.className = `cb-block cb-type-${type}${isAlt ? ' cb-block-alt' : ''}`;
+    section.innerHTML = `<div class="cb-inner">${innerContent}</div>`;
+    slot.appendChild(section);
+  });
+}
+
+// ── メンバーモーダル ───────────────────────────────
+function openMemberModal(key) {
+  const profile = ((window.YMS_CONFIG || {}).memberProfiles || {})[key] || {};
+  const imgs    = (window.YMS_IMAGES || {}).members || {};
+  const imgSrc  = imgs[key] || '';
+
+  // 写真
+  const photoEl = document.getElementById('mmPhoto');
+  if (photoEl) {
+    if (imgSrc) {
+      photoEl.innerHTML = `<img src="${imgSrc}" alt="${escHtml(profile.fullName || '')}">`;
+    } else {
+      const initial = (profile.fullName || key).charAt(0);
+      photoEl.innerHTML = `<div class="mm-initial" style="background:linear-gradient(135deg,${profile.color||'var(--color-primary)'},var(--color-secondary))">${initial}</div>`;
+    }
+    photoEl.style.borderColor = profile.color || 'var(--color-primary)';
+  }
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
+  set('mmFullName', profile.fullName);
+  set('mmNickname', profile.nickname ? `「${profile.nickname}」` : '');
+
+  // 詳細リスト
+  const detailEl = document.getElementById('mmDetails');
+  if (detailEl) {
+    const rows = [];
+    if (profile.birthday)  rows.push(['誕生日', profile.birthday]);
+    if (profile.birthplace) rows.push(['出身地', profile.birthplace]);
+    detailEl.innerHTML = rows.map(([dt, dd]) => `<dt>${dt}</dt><dd>${escHtml(dd)}</dd>`).join('');
+    detailEl.style.display = rows.length ? '' : 'none';
+  }
+
+  const descEl = document.getElementById('mmDescription');
+  if (descEl) {
+    descEl.innerHTML  = profile.description ? parseBold(escHtml(profile.description)) : '';
+    descEl.style.display = profile.description ? '' : 'none';
+  }
+
+  const skillsEl = document.getElementById('mmSkills');
+  if (skillsEl) {
+    const skills = (profile.skills || '').split(/[,、\n]/).map(s => s.trim()).filter(Boolean);
+    skillsEl.innerHTML = skills.map(s => `<span class="mm-skill-tag">${escHtml(s)}</span>`).join('');
+    skillsEl.style.display = skills.length ? '' : 'none';
+  }
+
+  const snsEl = document.getElementById('mmSns');
+  if (snsEl) {
+    let sns = '';
+    if (profile.twitter)   sns += `<a href="${escHtml(profile.twitter)}" target="_blank" rel="noopener">𝕏 Twitter</a>`;
+    if (profile.instagram) sns += `<a href="${escHtml(profile.instagram)}" target="_blank" rel="noopener">📷 Instagram</a>`;
+    snsEl.innerHTML = sns;
+    snsEl.style.display = sns ? '' : 'none';
+  }
+
+  const overlay = document.getElementById('memberModal');
+  if (overlay) {
+    overlay.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMemberModal(e) {
+  if (e && e.target !== document.getElementById('memberModal')) return;
+  const overlay = document.getElementById('memberModal');
+  if (overlay) {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+}
+
+// Escキーで閉じる
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMemberModal();
+});
 
 // ── リワード動的レンダリング ───────────────────────
 function renderRewards() {

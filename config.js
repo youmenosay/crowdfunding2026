@@ -406,4 +406,18 @@ window.YMS_CONFIG = {
       ],
     },
   ],
+
+  // コンテンツブロック（管理画面から追加・削除・並べ替え可）
+  // position: about-top/bottom, project-top/bottom, milestone-top/bottom, rewards-top/bottom
+  // type: image-left, image-right, image-top, image-only, text-only
+  contentBlocks: [],
+
+  // メンバーごとのプロフィール（管理画面で編集可）
+  memberProfiles: {
+    kano:  { fullName: '北郷可恩',    nickname: 'きゃのち',    color: '#28a064', birthday: '', birthplace: '', description: '', skills: '', twitter: '', instagram: '' },
+    sari:  { fullName: '雪乃さり',    nickname: 'さりちゃん',  color: '#ff5dae', birthday: '', birthplace: '', description: '', skills: '', twitter: '', instagram: '' },
+    reina: { fullName: '雨宮れいな',  nickname: 'れーにゃ',    color: '#c840f0', birthday: '', birthplace: '', description: '', skills: '', twitter: '', instagram: '' },
+    haru:  { fullName: 'ねむいのはる', nickname: 'ねむちゃん', color: '#4aa0e8', birthday: '', birthplace: '', description: '', skills: '', twitter: '', instagram: '' },
+    yuka:  { fullName: '陽葵優叶',    nickname: 'ぺんざむ',    color: '#ff8c00', birthday: '', birthplace: '', description: '', skills: '', twitter: '', instagram: '' },
+  },
 };
