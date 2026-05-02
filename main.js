@@ -1,15 +1,17 @@
-// youmenosay CF メインスクリプト v1.2
+// youmenosay CF メインスクリプト v1.3
 
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
+  applyHeroTypography();
   applyContent();
-  applySoreosLinks();
-  applyRewardVisibility();
   applyImages();
+  applyImageSlots();
   applyProgress();
-  applyScheduleToday();
+  renderSchedule();
+  renderRewards();
+  applyRewardImages();
+  applySoreosLinks();   // must run after renderRewards() creates .soreos-link elements
   initNav();
-  initRewardTabs();
   initParticles();
   initScrollAnimations();
 });
@@ -30,6 +32,23 @@ function applyTheme() {
   r.setProperty('--font-body',        t.fontBody);
 }
 
+// ── ヒーロータイポグラフィ ─────────────────────────
+function applyHeroTypography() {
+  const ht = (window.YMS_CONFIG.heroTypography) || {};
+  const titleEl = document.getElementById('heroTitleEl');
+  const leadEl  = document.getElementById('heroLeadText');
+  if (titleEl && ht.titleSize) titleEl.style.fontSize = ht.titleSize;
+  if (leadEl  && ht.leadSize)  leadEl.style.fontSize  = ht.leadSize;
+}
+
+// ── **bold** → <strong> 変換 ─────────────────────
+function parseBold(text) {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
 // ── テキストコンテンツ ─────────────────────────────
 function applyContent() {
   const c = (window.YMS_CONFIG || {}).content || {};
@@ -40,7 +59,7 @@ function applyContent() {
   }
   if (c.heroLead) {
     const el = document.getElementById('heroLeadText');
-    if (el) el.innerHTML = c.heroLead.replace(/\n/g, '<br>');
+    if (el) el.innerHTML = parseBold(c.heroLead);
   }
   if (c.goalAmount) {
     const el = document.getElementById('goalAmountDisplay');
@@ -48,15 +67,15 @@ function applyContent() {
   }
   if (c.aboutMain) {
     const el = document.getElementById('aboutMainText');
-    if (el) el.innerHTML = c.aboutMain.replace(/\n/g, '<br>');
+    if (el) el.innerHTML = parseBold(c.aboutMain);
   }
   if (c.projectMain) {
     const el = document.getElementById('projectMainText');
-    if (el) el.innerHTML = c.projectMain.replace(/\n/g, '<br>');
+    if (el) el.innerHTML = parseBold(c.projectMain);
   }
   if (c.producerMessage) {
     const el = document.getElementById('producerMessageText');
-    if (el) el.innerHTML = c.producerMessage.replace(/\n/g, '<br>');
+    if (el) el.innerHTML = parseBold(c.producerMessage);
   }
 }
 
@@ -72,41 +91,29 @@ function applySoreosLinks() {
   });
 }
 
-// ── リワード表示制御 ────────────────────────────────
-function applyRewardVisibility() {
-  const rw = window.YMS_CONFIG.rewards;
-  Object.entries(rw).forEach(([key, cfg]) => {
-    const panel = document.getElementById('tab-' + key);
-    const tab   = document.querySelector(`[data-tab="${key}"]`);
-    if (!panel) return;
-    if (!cfg.visible) {
-      panel.style.display = 'none';
-      if (tab) tab.style.display = 'none';
-      return;
-    }
-    if (cfg.comingSoon) {
-      panel.querySelectorAll('.btn-reward').forEach(btn => {
-        btn.textContent    = '近日公開予定';
-        btn.classList.add('btn-disabled');
-        btn.removeAttribute('href');
-      });
-    }
-    if (cfg.periodText) {
-      const el = panel.querySelector('.plan-period');
-      if (el) el.textContent = cfg.periodText;
-    }
-  });
-}
-
 // ── 画像適用 ──────────────────────────────────────
 function applyImages() {
   const imgs = window.YMS_IMAGES;
   if (!imgs) return;
 
-  // ヒーロー背景
+  // ヒーロー背景オーバーレイ
   if (imgs.hero) {
     const bg = document.getElementById('heroImgBg');
     if (bg) { bg.style.backgroundImage = `url(${imgs.hero})`; bg.classList.add('active'); }
+  }
+
+  // ヒーロー上部画像
+  if (imgs.heroAbove) {
+    const wrap = document.getElementById('heroImgAbove');
+    const img  = document.getElementById('heroImgAboveImg');
+    if (wrap && img) { img.src = imgs.heroAbove; wrap.style.display = ''; }
+  }
+
+  // ヒーロー下部メインビジュアル
+  if (imgs.heroBelow) {
+    const wrap = document.getElementById('heroImgBelow');
+    const img  = document.getElementById('heroImgBelowImg');
+    if (wrap && img) { img.src = imgs.heroBelow; wrap.style.display = ''; }
   }
 
   // メンバー写真
@@ -122,19 +129,6 @@ function applyImages() {
       avatar.textContent = '';
       avatar.appendChild(img);
       avatar.classList.add('has-photo');
-    });
-  }
-
-  // 各リターンカード画像
-  if (imgs.rewardCards) {
-    Object.entries(imgs.rewardCards).forEach(([id, src]) => {
-      if (!src) return;
-      const card = document.querySelector(`.reward-card[data-reward-id="${id}"]`);
-      if (!card) return;
-      const wrap = card.querySelector('.reward-card-img');
-      if (!wrap) return;
-      wrap.innerHTML = `<img src="${src}" alt="" loading="lazy">`;
-      wrap.style.display = 'block';
     });
   }
 
@@ -173,6 +167,32 @@ function applyImages() {
   }
 }
 
+// ── ページ内画像スロット ───────────────────────────
+function applyImageSlots() {
+  const slots = (window.YMS_IMAGES || {}).slots || {};
+  Object.entries(slots).forEach(([key, src]) => {
+    if (!src) return;
+    const el = document.getElementById(`slot-${key}`);
+    if (!el) return;
+    const img = el.querySelector('img');
+    if (img) { img.src = src; el.style.display = ''; }
+  });
+}
+
+// ── リワードカード画像を動的に適用 ──────────────────
+function applyRewardImages() {
+  const cards = (window.YMS_IMAGES || {}).rewardCards || {};
+  Object.entries(cards).forEach(([id, src]) => {
+    if (!src) return;
+    const card = document.querySelector(`.reward-card[data-reward-id="${id}"]`);
+    if (!card) return;
+    const wrap = card.querySelector('.reward-card-img');
+    if (!wrap) return;
+    wrap.innerHTML = `<img src="${src}" alt="" loading="lazy">`;
+    wrap.style.display = 'block';
+  });
+}
+
 // ── マイルストーン進捗 ─────────────────────────────
 const MILESTONE_AMOUNTS = [500000, 1000000, 1500000, 2000000, 2500000,
                             3000000, 3500000, 4000000, 4500000, 5000000];
@@ -184,7 +204,6 @@ function applyProgress() {
   const nextMs   = MILESTONE_AMOUNTS.find(m => m > current);
   const remaining = nextMs ? nextMs - current : 0;
 
-  // 進捗バー
   const barEl = document.getElementById('mpbBar');
   if (barEl) barEl.style.width = percent + '%';
 
@@ -192,7 +211,7 @@ function applyProgress() {
   if (amtEl) amtEl.textContent = '¥' + current.toLocaleString('ja-JP');
 
   const pctEl = document.getElementById('mpbPercent');
-  if (pctEl) pctEl.textContent = percent.toFixed(1) + '%';
+  if (pctEl) pctEl.textContent = '達成率 ' + percent.toFixed(1) + '%';
 
   const nextEl = document.getElementById('mpbNext');
   if (nextEl) {
@@ -204,37 +223,64 @@ function applyProgress() {
     }
   }
 
-  // 更新日時
   const updatedAt = window.YMS_CONFIG.currentAmountUpdatedAt;
   const dateEl    = document.getElementById('mpbUpdated');
   if (dateEl && updatedAt) {
     const d = new Date(updatedAt);
-    const fmt = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 更新`;
-    dateEl.textContent = fmt;
+    dateEl.textContent = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 更新`;
   }
 
-  // 各マイルストーンアイテムの状態
-  document.querySelectorAll('.milestone-item[data-amount]').forEach(item => {
-    const amt = parseInt(item.dataset.amount);
-    item.classList.remove('ms-achieved', 'ms-current', 'ms-upcoming');
+  // マイルストーンカードの状態
+  document.querySelectorAll('.milestone-card[data-amount]').forEach(card => {
+    const amt = parseInt(card.dataset.amount);
+    card.classList.remove('ms-achieved', 'ms-current', 'ms-upcoming');
     if (current >= amt) {
-      item.classList.add('ms-achieved');
+      card.classList.add('ms-achieved');
     } else if (amt === nextMs) {
-      item.classList.add('ms-current');
+      card.classList.add('ms-current');
     } else {
-      item.classList.add('ms-upcoming');
+      card.classList.add('ms-upcoming');
     }
   });
 }
 
+// ── スケジュール動的レンダリング ─────────────────────
+function renderSchedule() {
+  const schedule = (window.YMS_CONFIG.schedule) || [];
+  const container = document.getElementById('scheduleTimeline');
+  if (!container) return;
+
+  if (schedule.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:var(--color-text-muted)">スケジュールはまもなく公開予定です</p>';
+    return;
+  }
+
+  container.innerHTML = schedule.map(item => `
+    <div class="schedule-item${item.highlight ? ' highlight' : ''}" data-date="${item.date}" data-sid="${item.id}">
+      <div class="schedule-date">${item.dateLabel}</div>
+      <div class="schedule-content">
+        <h4>${escHtml(item.title)}</h4>
+        ${item.description ? `<p>${escHtml(item.description).replace(/\n/g, '<br>')}</p>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  // 今日マーカー
+  applyScheduleToday();
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // ── スケジュール「今日」マーカー ─────────────────────
 function applyScheduleToday() {
-  const today    = new Date();
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const items    = Array.from(document.querySelectorAll('.schedule-item[data-date]'));
+  const items = Array.from(document.querySelectorAll('.schedule-item[data-date]'));
   if (!items.length) return;
 
-  let todayItem  = null;
+  let todayItem   = null;
   let nearestItem = null;
   let nearestDiff = Infinity;
 
@@ -242,7 +288,6 @@ function applyScheduleToday() {
     const d = new Date(item.dataset.date);
     d.setHours(0, 0, 0, 0);
     const diff = d - today;
-
     if (diff === 0) {
       todayItem = item;
     } else if (diff > 0 && diff < nearestDiff) {
@@ -251,14 +296,113 @@ function applyScheduleToday() {
     }
   });
 
-  const targetItem = todayItem || nearestItem;
-  if (targetItem) {
-    targetItem.classList.add('schedule-today');
+  const target = todayItem || nearestItem;
+  if (target) {
+    target.classList.add('schedule-today');
     const label = document.createElement('div');
     label.className   = 'schedule-today-label';
     label.textContent = todayItem ? '⭐ 本日！' : '⭐ 次のイベント';
-    targetItem.querySelector('.schedule-content')?.prepend(label);
+    target.querySelector('.schedule-content')?.prepend(label);
   }
+}
+
+// ── リワード動的レンダリング ───────────────────────
+function renderRewards() {
+  const plans = (window.YMS_CONFIG.rewardsData) || [];
+  const tabsEl   = document.getElementById('rewardTabs');
+  const panelsEl = document.getElementById('rewardPanels');
+  if (!tabsEl || !panelsEl) return;
+
+  const visiblePlans = plans.filter(p => p.visible !== false);
+  if (visiblePlans.length === 0) return;
+
+  tabsEl.innerHTML   = visiblePlans.map((p, i) => `
+    <button class="reward-tab${i === 0 ? ' active' : ''}" data-tab="${p.id}">${escHtml(p.tabLabel)}</button>
+  `).join('');
+
+  panelsEl.innerHTML = visiblePlans.map((p, i) => {
+    const headerClass = p.headerType === 'limited' ? 'plan-header limited'
+                      : p.headerType === 'coming-soon' ? 'plan-header coming-soon'
+                      : 'plan-header';
+    const badge = p.headerType === 'limited'     ? '<span class="plan-badge">期間限定</span>'
+                : p.headerType === 'coming-soon' ? '<span class="plan-badge">近日公開</span>'
+                : '';
+
+    const cardsHtml = p.comingSoon
+      ? renderComingSoonCards(p.cards)
+      : p.cards.map(card => renderCard(card)).join('');
+
+    const noticesHtml = p.notices && p.notices.length > 0
+      ? `<div class="plan-notice">
+           <h4>${escHtml(p.tabLabel)} 共通注意事項</h4>
+           <ul>${p.notices.map(n => `<li>${escHtml(n)}</li>`).join('')}</ul>
+         </div>`
+      : '';
+
+    return `
+      <div class="reward-panel${i === 0 ? ' active' : ''}" id="tab-${p.id}">
+        <div class="${headerClass}">
+          ${badge}
+          <h3>${escHtml(p.title)}</h3>
+          ${p.periodText ? `<p class="plan-period">${escHtml(p.periodText)}</p>` : ''}
+          ${p.periodNote ? `<p class="plan-note">${escHtml(p.periodNote)}</p>` : ''}
+        </div>
+        <div class="reward-cards">${cardsHtml}</div>
+        ${noticesHtml}
+      </div>
+    `;
+  }).join('');
+
+  // タブ初期化
+  initRewardTabs();
+}
+
+function renderComingSoonCards(cards) {
+  return cards.map(card => `
+    <div class="reward-card" data-reward-id="${card.id}">
+      <div class="reward-card-img" style="display:none"></div>
+      <div class="reward-price">¥${escHtml(card.price)}</div>
+      ${card.limit ? `<div class="reward-limit">★ ${escHtml(card.limit)}</div>` : ''}
+      <h4>${escHtml(card.title)}</h4>
+      <button class="btn-reward btn-disabled" disabled>近日公開予定</button>
+    </div>
+  `).join('');
+}
+
+function renderCard(card) {
+  const subItemsHtml = card.subItems && card.subItems.length > 0
+    ? `<div class="offkai-list">${card.subItems.map(s => `
+        <div class="offkai-item">
+          <strong>${escHtml(s.title)}</strong>
+          <span>${escHtml(s.detail)}</span>
+        </div>`).join('')}</div>`
+    : '';
+
+  const itemsHtml = card.items && card.items.length > 0
+    ? `<ul class="reward-items">${card.items.map(i => `<li>${escHtml(i)}</li>`).join('')}</ul>`
+    : '';
+
+  const deliveryHtml = card.delivery && card.delivery.length > 0
+    ? `<div class="reward-delivery">${card.delivery.map(d => `<p>${escHtml(d)}</p>`).join('')}</div>`
+    : '';
+
+  const descHtml = card.description
+    ? `<p class="reward-variants">${escHtml(card.description)}</p>`
+    : '';
+
+  return `
+    <div class="reward-card" data-reward-id="${card.id}">
+      <div class="reward-card-img" style="display:none"></div>
+      <div class="reward-price">¥${escHtml(card.price)}</div>
+      ${card.limit ? `<div class="reward-limit">★ ${escHtml(card.limit)}</div>` : ''}
+      <h4>${escHtml(card.title)}</h4>
+      ${descHtml}
+      ${subItemsHtml}
+      ${itemsHtml}
+      ${deliveryHtml}
+      <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+    </div>
+  `;
 }
 
 // ── ナビゲーション ─────────────────────────────────
@@ -308,7 +452,7 @@ function initRewardTabs() {
 function initParticles() {
   const container = document.getElementById('heroParticles');
   if (!container) return;
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 60; i++) {
     const star = document.createElement('span');
     star.className = 'particle';
     star.style.cssText = `
@@ -325,8 +469,11 @@ function initParticles() {
 function initScrollAnimations() {
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.08 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 }
