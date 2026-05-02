@@ -14,12 +14,12 @@ window.YMS_CONFIG = {
   // テーマ設定
   theme: {
     colorPrimary:   "#e879b0",
-    colorSecondary: "#3a7fee",
-    colorAccent:    "#ff990a",
+    colorSecondary: "#7c3aed",
+    colorAccent:    "#f5a623",
     colorBg:        "#0f0b1e",
-    colorSurface:   "#ffffff",
+    colorSurface:   "#1e1a35",
     colorBorder:    "#2e2a50",
-    colorText:      "#1c1a23",
+    colorText:      "#f0ecff",
     colorTextMuted: "#9d96c0",
     fontHeading:    "'Zen Maru Gothic', sans-serif",
     fontBody:       "'Noto Sans JP', sans-serif",
