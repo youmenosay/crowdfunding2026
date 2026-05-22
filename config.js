@@ -47,23 +47,23 @@ window.YMS_CONFIG = {
   schedule: [
     {
       id: 's1',
-      date: '2025-05-08',
-      dateLabel: '5月8日(木)',
+      date: '2026-05-08',
+      dateLabel: '5月8日(金)',
       title: 'クラウドファンディング スタート',
       description: 'スタートダッシュプラン公開開始',
       highlight: false,
     },
     {
       id: 's2',
-      date: '2025-05-11',
-      dateLabel: '5月11日(日)',
+      date: '2026-05-11',
+      dateLabel: '5月11日(月)',
       title: 'スタートダッシュプラン 終了 / 在宅プラン等 順次公開開始',
-      description: '23:59まで（コンビニ払い期限：5月16日(金) 23:59）',
+      description: '23:59まで（コンビニ払い期限：5月16日(土) 23:59）',
       highlight: false,
     },
     {
       id: 's_sale1',
-      date: '2025-05-25',
+      date: '2026-05-25',
       dateLabel: '5月25日(月)',
       title: '在宅プラン・法人プラン・体験型プラン（一部）販売開始',
       description: '在宅プラン全4種 / 法人プラン全3種 / アフタヌーンティー女子会・男子会 / 撮影会（各メンバー5種）21時〜',
@@ -71,7 +71,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's_sale2',
-      date: '2025-05-27',
+      date: '2026-05-27',
       dateLabel: '5月27日(水)',
       title: 'クリエイティブプラン 販売開始',
       description: '全6種（自己紹介ソング・楽曲制作・デザイン・小物制作・動画制作・YouTuber）21時〜',
@@ -79,7 +79,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's_sale3',
-      date: '2025-06-01',
+      date: '2026-06-01',
       dateLabel: '6月1日(月)',
       title: 'オフイベ参加権 販売開始',
       description: 'きゃのち・さりちゃん・れーにゃ・ねむちゃん・ぺんざむ（各15人限定）21時〜',
@@ -87,7 +87,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's_sale4',
-      date: '2025-06-10',
+      date: '2026-06-10',
       dateLabel: '6月10日(水)',
       title: 'スペシャルプラン 販売開始',
       description: 'ゆめのせいサポートメンバープラン（1枠限定）21時〜',
@@ -95,7 +95,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's3',
-      date: '2025-07-11',
+      date: '2026-07-11',
       dateLabel: '7月11日(土)',
       title: 'きゃのちと！オフイベ / れーにゃと！オフイベ',
       description: '（各2時間・都内近郊）',
@@ -103,7 +103,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's4',
-      date: '2025-07-12',
+      date: '2026-07-12',
       dateLabel: '7月12日(日)',
       title: 'さりちゃんと！オフイベ / ねむちゃんと！オフイベ / ぺんざむと！オフイベ',
       description: '（各2時間・都内近郊）',
@@ -111,7 +111,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's5',
-      date: '2025-08-09',
+      date: '2026-08-09',
       dateLabel: '8月9日(日)',
       title: 'アフタヌーンティー女子会・男子会',
       description: '12:00〜（女子）/ 14:00〜（男子）各70分間',
@@ -119,7 +119,7 @@ window.YMS_CONFIG = {
     },
     {
       id: 's6',
-      date: '2025-09-13',
+      date: '2026-09-13',
       dateLabel: '9月13日(日)',
       title: 'はじめての！撮影会',
       description: '午後〜（都内スタジオ）',
@@ -142,8 +142,8 @@ window.YMS_CONFIG = {
       tabLabel: 'スタートダッシュ',
       headerType: 'expired',
       title: 'スタートダッシュプラン',
-      periodText: '5月8日(木) 〜 5月11日(日) 23:59まで',
-      periodNote: '※コンビニ支払いの場合、支払い期限は5月16日(金) 23:59まで',
+      periodText: '5月8日(金) 〜 5月11日(月) 23:59まで',
+      periodNote: '※コンビニ支払いの場合、支払い期限は5月16日(土) 23:59まで',
       visible: true,
       comingSoon: false,
       notices: [],
