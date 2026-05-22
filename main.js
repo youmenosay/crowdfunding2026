@@ -579,9 +579,9 @@ function renderGroupIntro() {
   if (!container) return;
 
   const images = [
-    { src: 'youmenosayって？紹介画像１ .jpg', alt: 'youmenosayって？①' },
-    { src: 'younmenosayって？紹介画像２ .jpg', alt: 'youmenosayって？②' },
-    { src: 'メンバー紹介画像.jpg',             alt: 'メンバー紹介' },
+    { src: 'intro-01.jpg', alt: 'youmenosayって？①' },
+    { src: 'intro-02.jpg', alt: 'youmenosayって？②' },
+    { src: 'member-intro.jpg',             alt: 'メンバー紹介' },
   ];
 
   container.innerHTML = images.map(m => `
@@ -599,12 +599,12 @@ function renderMemberMessages() {
   container.classList.add('h-carousel');
 
   const messages = [
-    { src: 'メンバーからのメッセージ北郷可恩１.jpg', alt: '北郷可恩からのメッセージ' },
-    { src: 'メンバーからのメッセージ北郷可恩２.jpg', alt: '北郷可恩からのメッセージ②' },
-    { src: 'メンバーからのメッセージ雪乃さり.jpg',   alt: '雪乃さりからのメッセージ' },
-    { src: 'メンバーからのメッセージ雨宮れいな.jpg', alt: '雨宮れいなからのメッセージ' },
-    { src: 'メンバーからのメッセージねむいのはる.jpg', alt: 'ねむいのはるからのメッセージ' },
-    { src: 'メンバーからのメッセージ陽葵優叶.jpg',   alt: '陽葵優叶からのメッセージ' },
+    { src: 'message-kano-1.jpg', alt: '北郷可恩からのメッセージ' },
+    { src: 'message-kano-2.jpg', alt: '北郷可恩からのメッセージ②' },
+    { src: 'message-sari.jpg',   alt: '雪乃さりからのメッセージ' },
+    { src: 'message-reina.jpg', alt: '雨宮れいなからのメッセージ' },
+    { src: 'message-haru.jpg', alt: 'ねむいのはるからのメッセージ' },
+    { src: 'message-yuka.jpg',   alt: '陽葵優叶からのメッセージ' },
   ];
 
   container.innerHTML = messages.map(m => `
