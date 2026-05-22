@@ -11,10 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRewards();
   applyRewardImages();
   renderContentBlocks();
+  renderGroupIntro();
+  renderMemberMessages();
   applySoreosLinks();   // must run after renderRewards() creates .soreos-link elements
   initNav();
   initParticles();
   initScrollAnimations();
+  initDragCarousels();
 });
 
 // ── テーマ ──────────────────────────────────────────
@@ -95,15 +98,18 @@ function applySoreosLinks() {
 // ── 画像適用 ──────────────────────────────────────
 function applyImages() {
   const imgs = window.YMS_IMAGES;
-  if (!imgs) return;
+  const cfg  = window.YMS_CONFIG;
 
   // ヒーロー背景オーバーレイ
-  if (imgs.hero) {
-    const bg = document.getElementById('heroImgBg');
-    if (bg) { bg.style.backgroundImage = `url(${imgs.hero})`; bg.classList.add('active'); }
+  const heroBg = document.getElementById('heroImgBg');
+  if (heroBg) {
+    const heroSrc = (imgs && imgs.hero) || null;
+    if (heroSrc) { heroBg.style.backgroundImage = `url("${heroSrc}")`; heroBg.classList.add('active'); }
   }
 
-  // ヒーロー上部画像
+  if (!imgs) return;
+
+  // ヒーロー上部画像（以降は imgs が必要）
   if (imgs.heroAbove) {
     const wrap = document.getElementById('heroImgAbove');
     const img  = document.getElementById('heroImgAboveImg');
@@ -375,8 +381,10 @@ function openMemberModal(key) {
   const detailEl = document.getElementById('mmDetails');
   if (detailEl) {
     const rows = [];
-    if (profile.birthday)  rows.push(['誕生日', profile.birthday]);
-    if (profile.birthplace) rows.push(['出身地', profile.birthplace]);
+    if (profile.birthday)   rows.push(['誕生日',  profile.birthday]);
+    if (profile.height)     rows.push(['身長',    profile.height]);
+    if (profile.bloodType)  rows.push(['血液型',  profile.bloodType]);
+    if (profile.birthplace) rows.push(['出身地',  profile.birthplace]);
     detailEl.innerHTML = rows.map(([dt, dd]) => `<dt>${dt}</dt><dd>${escHtml(dd)}</dd>`).join('');
     detailEl.style.display = rows.length ? '' : 'none';
   }
@@ -396,9 +404,17 @@ function openMemberModal(key) {
 
   const snsEl = document.getElementById('mmSns');
   if (snsEl) {
+    const icon = {
+      x:       `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+      tiktok:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.13 8.13 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>`,
+      instagram:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>`,
+      youtube:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>`,
+    };
     let sns = '';
-    if (profile.twitter)   sns += `<a href="${escHtml(profile.twitter)}" target="_blank" rel="noopener">𝕏 Twitter</a>`;
-    if (profile.instagram) sns += `<a href="${escHtml(profile.instagram)}" target="_blank" rel="noopener">📷 Instagram</a>`;
+    if (profile.twitter)   sns += `<a href="${escHtml(profile.twitter)}"   class="sns-x"        target="_blank" rel="noopener" aria-label="X (Twitter)">${icon.x}</a>`;
+    if (profile.tiktok)    sns += `<a href="${escHtml(profile.tiktok)}"    class="sns-tiktok"   target="_blank" rel="noopener" aria-label="TikTok">${icon.tiktok}</a>`;
+    if (profile.instagram) sns += `<a href="${escHtml(profile.instagram)}" class="sns-instagram" target="_blank" rel="noopener" aria-label="Instagram">${icon.instagram}</a>`;
+    if (profile.youtube)   sns += `<a href="${escHtml(profile.youtube)}"   class="sns-youtube"  target="_blank" rel="noopener" aria-label="YouTube">${icon.youtube}</a>`;
     snsEl.innerHTML = sns;
     snsEl.style.display = sns ? '' : 'none';
   }
@@ -510,19 +526,92 @@ function renderCard(card) {
     ? `<p class="reward-variants">${escHtml(card.description)}</p>`
     : '';
 
+  const imgHtml = card.image
+    ? `<a href="plan.html?id=${escHtml(card.id)}" target="_blank" class="reward-card-img-link">
+         <div class="reward-card-img"><img src="${escHtml(card.image)}" alt="${escHtml(card.title)}" loading="lazy"></div>
+       </a>`
+    : '<div class="reward-card-img" style="display:none"></div>';
+
   return `
     <div class="reward-card" data-reward-id="${card.id}">
-      <div class="reward-card-img" style="display:none"></div>
+      ${imgHtml}
       <div class="reward-price">¥${escHtml(card.price)}</div>
       ${card.limit ? `<div class="reward-limit">★ ${escHtml(card.limit)}</div>` : ''}
-      <h4>${escHtml(card.title)}</h4>
+      <h4><a href="plan.html?id=${escHtml(card.id)}" target="_blank" class="reward-title-link">${escHtml(card.title)}</a></h4>
       ${descHtml}
       ${subItemsHtml}
       ${itemsHtml}
       ${deliveryHtml}
-      <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+      <div class="reward-card-actions">
+        <a href="plan.html?id=${escHtml(card.id)}" class="btn-reward btn-detail" target="_blank">詳細を見る</a>
+        <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
+      </div>
     </div>
   `;
+}
+
+// ── グループ紹介カルーセル ─────────────────────────
+function renderGroupIntro() {
+  const container = document.getElementById('groupIntroCarousel');
+  if (!container) return;
+
+  const images = [
+    { src: 'youmenosayって？紹介画像１ .jpg', alt: 'youmenosayって？①' },
+    { src: 'younmenosayって？紹介画像２ .jpg', alt: 'youmenosayって？②' },
+    { src: 'メンバー紹介画像.jpg',             alt: 'メンバー紹介' },
+  ];
+
+  container.innerHTML = images.map(m => `
+    <figure class="h-carousel-item fade-in">
+      <img src="${escHtml(m.src)}" alt="${escHtml(m.alt)}" loading="lazy">
+    </figure>
+  `).join('');
+}
+
+// ── メンバーメッセージカルーセル ───────────────────
+function renderMemberMessages() {
+  const container = document.getElementById('memberMessagesGrid');
+  if (!container) return;
+
+  container.classList.add('h-carousel');
+
+  const messages = [
+    { src: 'メンバーからのメッセージ北郷可恩１.jpg', alt: '北郷可恩からのメッセージ' },
+    { src: 'メンバーからのメッセージ北郷可恩２.jpg', alt: '北郷可恩からのメッセージ②' },
+    { src: 'メンバーからのメッセージ雪乃さり.jpg',   alt: '雪乃さりからのメッセージ' },
+    { src: 'メンバーからのメッセージ雨宮れいな.jpg', alt: '雨宮れいなからのメッセージ' },
+    { src: 'メンバーからのメッセージねむいのはる.jpg', alt: 'ねむいのはるからのメッセージ' },
+    { src: 'メンバーからのメッセージ陽葵優叶.jpg',   alt: '陽葵優叶からのメッセージ' },
+  ];
+
+  container.innerHTML = messages.map(m => `
+    <figure class="h-carousel-item fade-in">
+      <img src="${escHtml(m.src)}" alt="${escHtml(m.alt)}" loading="lazy">
+    </figure>
+  `).join('');
+}
+
+// ── ドラッグスクロール（デスクトップ用） ─────────────
+function initDragCarousels() {
+  document.querySelectorAll('.h-carousel').forEach(el => {
+    let isDown = false;
+    let startX, scrollLeft;
+
+    el.addEventListener('mousedown', e => {
+      isDown    = true;
+      startX    = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+      el.classList.add('grabbing');
+    });
+    el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('grabbing'); });
+    el.addEventListener('mouseup',    () => { isDown = false; el.classList.remove('grabbing'); });
+    el.addEventListener('mousemove',  e => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      el.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
+  });
 }
 
 // ── ナビゲーション ─────────────────────────────────

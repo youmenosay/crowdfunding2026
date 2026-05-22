@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プラン詳細 | youmenosay アニメ化プロジェクト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+
+<nav class="nav scrolled" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">youmenosay</a>
+    <a href="index.html#rewards" class="plan-back-link">← リターン一覧へ戻る</a>
+  </div>
+</nav>
+
+<main class="plan-detail-main">
+  <div class="container">
+    <div class="pd-wrap" id="planDetailContent">
+      <p style="text-align:center;padding:60px 0;color:var(--color-text-muted)">読み込み中...</p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p class="footer-logo">youmenosay</p>
+    <p class="footer-copy">&copy; 2025 youmenosay All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+  renderPlanDetail();
+});
+
+function applyTheme() {
+  const t = (window.YMS_CONFIG || {}).theme || {};
+  const r = document.documentElement.style;
+  if (t.colorPrimary)    r.setProperty('--color-primary',    t.colorPrimary);
+  if (t.colorSecondary)  r.setProperty('--color-secondary',  t.colorSecondary);
+  if (t.colorAccent)     r.setProperty('--color-accent',     t.colorAccent);
+  if (t.colorBg)         r.setProperty('--color-bg',         t.colorBg);
+  if (t.colorSurface)    r.setProperty('--color-surface',    t.colorSurface);
+  if (t.colorBorder)     r.setProperty('--color-border',     t.colorBorder);
+  if (t.colorText)       r.setProperty('--color-text',       t.colorText);
+  if (t.colorTextMuted)  r.setProperty('--color-text-muted', t.colorTextMuted);
+  if (t.fontHeading)     r.setProperty('--font-heading',     t.fontHeading);
+  if (t.fontBody)        r.setProperty('--font-body',        t.fontBody);
+}
+
+function esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderPlanDetail() {
+  const params  = new URLSearchParams(window.location.search);
+  const planId  = params.get('id');
+  const el      = document.getElementById('planDetailContent');
+
+  if (!planId) { showNotFound(el); return; }
+
+  let targetPlan = null;
+  let targetCard = null;
+
+  const plans = (window.YMS_CONFIG.rewardsData) || [];
+  for (const plan of plans) {
+    for (const card of (plan.cards || [])) {
+      if (card.id === planId) {
+        targetPlan = plan;
+        targetCard = card;
+        break;
+      }
+    }
+    if (targetCard) break;
+  }
+
+  if (!targetCard) { showNotFound(el); return; }
+
+  document.title = targetCard.title + ' | youmenosay';
+
+  // 画像
+  const imgHtml = targetCard.image
+    ? `<div class="pd-image"><img src="${esc(targetCard.image)}" alt="${esc(targetCard.title)}" loading="lazy"></div>`
+    : '';
+
+  // プラン内容
+  const itemsHtml = targetCard.items && targetCard.items.length
+    ? `<div class="pd-section">
+        <h3 class="pd-section-title">プラン内容</h3>
+        <ul class="pd-items">${targetCard.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+       </div>`
+    : '';
+
+  // サブアイテム（スケジュール等）
+  const subItemsHtml = targetCard.subItems && targetCard.subItems.length
+    ? `<div class="pd-section">
+        <h3 class="pd-section-title">スケジュール</h3>
+        <div class="pd-subitems">${targetCard.subItems.map(s => `
+          <div class="pd-subitem">
+            <strong>${esc(s.title)}</strong>
+            <span>${esc(s.detail)}</span>
+          </div>`).join('')}</div>
+       </div>`
+    : '';
+
+  // お届け・注意事項
+  const deliveryHtml = targetCard.delivery && targetCard.delivery.length
+    ? `<div class="pd-section">
+        <h3 class="pd-section-title">お届け・注意事項</h3>
+        <div class="pd-delivery">${targetCard.delivery.map(d => `<p>${esc(d)}</p>`).join('')}</div>
+       </div>`
+    : '';
+
+  // タブ共通注意事項
+  const noticesHtml = targetPlan.notices && targetPlan.notices.length
+    ? `<div class="pd-section pd-notices">
+        <h3 class="pd-section-title">${esc(targetPlan.tabLabel)} 共通注意事項</h3>
+        <ul class="pd-notice-list">${targetPlan.notices.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+       </div>`
+    : '';
+
+  const soreosUrl = (window.YMS_CONFIG.soreosUrl) || '#';
+  const soreosAttr = soreosUrl === '#' ? ' aria-disabled="true" title="ソレオスのURLは近日公開予定です"' : '';
+
+  el.innerHTML = `
+    <nav class="pd-breadcrumb" aria-label="パンくずリスト">
+      <a href="index.html">TOP</a>
+      <span aria-hidden="true">›</span>
+      <a href="index.html#rewards">リターン一覧</a>
+      <span aria-hidden="true">›</span>
+      <span>${esc(targetPlan.tabLabel)}</span>
+    </nav>
+
+    <header>
+      <span class="pd-category">${esc(targetPlan.tabLabel)}</span>
+      <h1 class="pd-title">${esc(targetCard.title)}</h1>
+      ${targetCard.description ? `<p class="pd-desc">${esc(targetCard.description)}</p>` : ''}
+      <div class="pd-price-row">
+        <span class="pd-price">¥${esc(targetCard.price)}</span>
+        ${targetCard.limit ? `<span class="pd-limit">★ ${esc(targetCard.limit)}</span>` : ''}
+      </div>
+    </header>
+
+    ${imgHtml}
+    ${itemsHtml}
+    ${subItemsHtml}
+    ${deliveryHtml}
+    ${noticesHtml}
+
+    <div class="pd-cta">
+      <a href="${esc(soreosUrl)}" class="btn btn-primary btn-large"${soreosAttr}>
+        ソレオスで支援する →
+      </a>
+      <a href="index.html#rewards" class="pd-btn-back">← リターン一覧へ戻る</a>
+    </div>
+  `;
+}
+
+function showNotFound(el) {
+  el.innerHTML = `
+    <p style="text-align:center;padding:60px 0;color:var(--color-text-muted)">
+      プランが見つかりませんでした。<br>
+      <a href="index.html#rewards" style="color:var(--color-primary)">リターン一覧へ戻る</a>
+    </p>`;
+}
+</script>
+</body>
+</html>
