@@ -1346,6 +1346,49 @@ ul  { list-style: none; }
   50%       { box-shadow: 0 0 10px 2px rgba(255,204,0,0.3); }
 }
 
+/* 過去イベント */
+.schedule-item.schedule-past {
+  opacity: 0.42;
+}
+
+.schedule-item.schedule-past .schedule-dot {
+  background:   var(--color-border);
+  border-color: var(--color-border);
+}
+
+.schedule-item.schedule-past .schedule-date {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+/* 今日ライン */
+.schedule-today-line {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  margin:      4px 0 20px;
+  font-size:   0.78rem;
+  font-weight: 700;
+  color:       var(--color-accent);
+}
+
+.schedule-today-line::before,
+.schedule-today-line::after {
+  content:    '';
+  flex:       1;
+  height:     1px;
+  background: var(--color-accent);
+  opacity:    0.35;
+}
+
+.schedule-today-line span {
+  white-space:   nowrap;
+  background:    rgba(255, 204, 0, 0.1);
+  padding:       3px 12px;
+  border-radius: 999px;
+  border:        1px solid rgba(255, 204, 0, 0.3);
+}
+
 /* ===========================
    注意事項
    =========================== */

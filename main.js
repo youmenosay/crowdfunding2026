@@ -231,10 +231,15 @@ function applyProgress() {
   }
 
   const updatedAt = window.YMS_CONFIG.currentAmountUpdatedAt;
+  const dateText  = window.YMS_CONFIG.currentAmountDateText;
   const dateEl    = document.getElementById('mpbUpdated');
-  if (dateEl && updatedAt) {
-    const d = new Date(updatedAt);
-    dateEl.textContent = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 更新`;
+  if (dateEl) {
+    if (dateText) {
+      dateEl.textContent = dateText;
+    } else if (updatedAt) {
+      const d = new Date(updatedAt);
+      dateEl.textContent = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 更新`;
+    }
   }
 
   // マイルストーンカードの状態
@@ -287,6 +292,9 @@ function applyScheduleToday() {
   const items = Array.from(document.querySelectorAll('.schedule-item[data-date]'));
   if (!items.length) return;
 
+  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+  const todayStr = `${today.getMonth() + 1}月${today.getDate()}日（${dayNames[today.getDay()]}）`;
+
   let todayItem   = null;
   let nearestItem = null;
   let nearestDiff = Infinity;
@@ -297,18 +305,28 @@ function applyScheduleToday() {
     const diff = d - today;
     if (diff === 0) {
       todayItem = item;
-    } else if (diff > 0 && diff < nearestDiff) {
+    } else if (diff < 0) {
+      item.classList.add('schedule-past');
+    } else if (diff < nearestDiff) {
       nearestDiff = diff;
       nearestItem = item;
     }
   });
+
+  // 「今日」ラインを次のイベントの直前に挿入（当日イベントがない場合）
+  if (!todayItem && nearestItem) {
+    const marker = document.createElement('div');
+    marker.className = 'schedule-today-line';
+    marker.innerHTML = `<span>📅 今日：${todayStr}</span>`;
+    nearestItem.parentNode.insertBefore(marker, nearestItem);
+  }
 
   const target = todayItem || nearestItem;
   if (target) {
     target.classList.add('schedule-today');
     const label = document.createElement('div');
     label.className   = 'schedule-today-label';
-    label.textContent = todayItem ? '⭐ 本日開催！' : '⭐ 次のイベント';
+    label.textContent = todayItem ? `⭐ 本日開催！（${todayStr}）` : '⭐ 次のイベント';
     target.querySelector('.schedule-card')?.prepend(label);
   }
 }

@@ -318,6 +318,11 @@
             <label>更新日時（保存時に自動入力）</label>
             <input type="text" id="currentAmountUpdatedAt" readonly style="opacity:0.6">
           </div>
+          <div class="form-group">
+            <label>表示用日付テキスト（例：5月23日（土）現在）</label>
+            <input type="text" id="currentAmountDateText" placeholder="例: 5月23日（土）現在">
+            <p class="form-hint">金額の下に表示するテキストです。空白の場合は更新日時から自動生成します。</p>
+          </div>
           <button class="btn btn-primary" onclick="saveProgress()">進捗を保存</button>
         </div>
       </div>
@@ -609,6 +614,7 @@ function loadConfig() {
   document.getElementById('soreosUrl').value = config.soreosUrl || '';
   document.getElementById('currentAmount').value          = config.currentAmount || '';
   document.getElementById('currentAmountUpdatedAt').value = config.currentAmountUpdatedAt || '';
+  document.getElementById('currentAmountDateText').value  = config.currentAmountDateText  || '';
   updateAmountPreview();
 
   const ct = config.content || {};
@@ -679,6 +685,7 @@ function saveProgress() {
   const raw = (document.getElementById('currentAmount').value || '').replace(/[,\s]/g, '');
   config.currentAmount = parseInt(raw, 10) || 0;
   config.currentAmountUpdatedAt = new Date().toISOString();
+  config.currentAmountDateText  = document.getElementById('currentAmountDateText').value.trim();
   document.getElementById('currentAmountUpdatedAt').value = config.currentAmountUpdatedAt;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   updateAmountPreview();
@@ -1428,6 +1435,7 @@ window.YMS_CONFIG = {
 
   currentAmount:          ${c.currentAmount || 0},
   currentAmountUpdatedAt: ${JSON.stringify(c.currentAmountUpdatedAt || '')},
+  currentAmountDateText:  ${JSON.stringify(c.currentAmountDateText  || '')},
 
   heroTypography: {
     titleSize: ${JSON.stringify(ht.titleSize || '3.5rem')},
