@@ -449,19 +449,23 @@ function renderRewards() {
   const panelsEl = document.getElementById('rewardPanels');
   if (!tabsEl || !panelsEl) return;
 
-  const visiblePlans = plans.filter(p => p.visible !== false);
+  const visiblePlans = plans
+    .filter(p => p.visible !== false)
+    .sort((a, b) => (a.headerType === 'expired' ? 1 : 0) - (b.headerType === 'expired' ? 1 : 0));
   if (visiblePlans.length === 0) return;
 
   tabsEl.innerHTML   = visiblePlans.map((p, i) => `
-    <button class="reward-tab${i === 0 ? ' active' : ''}" data-tab="${p.id}">${escHtml(p.tabLabel)}</button>
+    <button class="reward-tab${i === 0 ? ' active' : ''}${p.headerType === 'expired' ? ' tab-expired' : ''}" data-tab="${p.id}">${escHtml(p.tabLabel)}</button>
   `).join('');
 
   panelsEl.innerHTML = visiblePlans.map((p, i) => {
-    const headerClass = p.headerType === 'limited' ? 'plan-header limited'
+    const headerClass = p.headerType === 'limited'     ? 'plan-header limited'
                       : p.headerType === 'coming-soon' ? 'plan-header coming-soon'
+                      : p.headerType === 'expired'     ? 'plan-header expired'
                       : 'plan-header';
     const badge = p.headerType === 'limited'     ? '<span class="plan-badge">期間限定</span>'
                 : p.headerType === 'coming-soon' ? '<span class="plan-badge">近日公開</span>'
+                : p.headerType === 'expired'     ? '<span class="plan-badge badge-expired">販売終了</span>'
                 : '';
 
     const cardsHtml = p.comingSoon
@@ -506,6 +510,24 @@ function renderComingSoonCards(cards) {
 }
 
 function renderCard(card) {
+  // 販売開始日時を description から自動抽出（明示的な saleDate がない場合）
+  let saleDate = card.saleDate || '';
+  let desc = card.description || '';
+  if (!saleDate) {
+    if (desc.includes('｜') && /販売開始/.test(desc.substring(0, desc.indexOf('｜')))) {
+      const idx = desc.indexOf('｜');
+      saleDate = desc.substring(0, idx);
+      desc = desc.substring(idx + 1);
+    } else if (/販売開始$/.test(desc)) {
+      saleDate = desc;
+      desc = '';
+    }
+  }
+
+  const saleDateHtml = saleDate
+    ? `<div class="reward-sale-date">🗓 ${escHtml(saleDate)}</div>`
+    : '';
+
   const subItemsHtml = card.subItems && card.subItems.length > 0
     ? `<div class="offkai-list">${card.subItems.map(s => `
         <div class="offkai-item">
@@ -522,8 +544,8 @@ function renderCard(card) {
     ? `<div class="reward-delivery">${card.delivery.map(d => `<p>${escHtml(d)}</p>`).join('')}</div>`
     : '';
 
-  const descHtml = card.description
-    ? `<p class="reward-variants">${escHtml(card.description)}</p>`
+  const descHtml = desc
+    ? `<p class="reward-desc">${escHtml(desc)}</p>`
     : '';
 
   const imgHtml = card.image
@@ -535,6 +557,7 @@ function renderCard(card) {
   return `
     <div class="reward-card" data-reward-id="${card.id}">
       ${imgHtml}
+      ${saleDateHtml}
       <div class="reward-price">¥${escHtml(card.price)}</div>
       ${card.limit ? `<div class="reward-limit">★ ${escHtml(card.limit)}</div>` : ''}
       <h4><a href="plan.html?id=${escHtml(card.id)}" target="_blank" class="reward-title-link">${escHtml(card.title)}</a></h4>

@@ -139,7 +139,7 @@ window.YMS_CONFIG = {
     {
       id: 'startdash',
       tabLabel: 'スタートダッシュ',
-      headerType: 'limited',
+      headerType: 'expired',
       title: 'スタートダッシュプラン',
       periodText: '5月8日(木) 〜 5月11日(日) 23:59まで',
       periodNote: '※コンビニ支払いの場合、支払い期限は5月16日(金) 23:59まで',

@@ -841,6 +841,17 @@ ul  { list-style: none; }
   font-weight:  700;
 }
 
+.reward-tab.tab-expired {
+  opacity: 0.55;
+}
+
+.reward-tab.tab-expired.active {
+  background:   rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.2);
+  color:        var(--color-text-muted);
+  opacity:      1;
+}
+
 .reward-panel { display: none; }
 .reward-panel.active { display: block; }
 
@@ -895,6 +906,18 @@ ul  { list-style: none; }
 .plan-header.coming-soon .plan-badge {
   background: var(--color-secondary);
   color:      #fff;
+}
+
+.plan-header.expired {
+  border-color: rgba(255,255,255,0.08);
+  background:   rgba(255,255,255,0.02);
+}
+
+.plan-header.expired h3 { color: var(--color-text-muted); }
+
+.badge-expired {
+  background: rgba(255,255,255,0.12);
+  color:      var(--color-text-muted);
 }
 
 .reward-cards {
@@ -962,6 +985,25 @@ ul  { list-style: none; }
   font-size:  0.78rem;
   color:      var(--color-accent);
   font-style: italic;
+}
+
+.reward-sale-date {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           4px;
+  font-size:     0.78rem;
+  font-weight:   700;
+  color:         var(--color-primary);
+  background:    rgba(255,93,174,0.1);
+  border:        1px solid rgba(255,93,174,0.3);
+  padding:       4px 12px;
+  border-radius: 999px;
+}
+
+.reward-desc {
+  font-size:   0.85rem;
+  color:       var(--color-text-muted);
+  line-height: 1.7;
 }
 
 .reward-items {
