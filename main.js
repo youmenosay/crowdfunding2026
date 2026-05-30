@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   applyImages();
   applyImageSlots();
   applyProgress();
+  fetchLiveAmount();
   renderSchedule();
   renderRewards();
   applyRewardImages();
@@ -198,6 +199,28 @@ function applyRewardImages() {
     wrap.innerHTML = `<img src="${src}" alt="" loading="lazy">`;
     wrap.style.display = 'block';
   });
+}
+
+// ── ソレオス 支援金額リアルタイム取得 ─────────────────
+async function fetchLiveAmount() {
+  try {
+    const res = await fetch('/api/amount');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (typeof data.amount !== 'number') return;
+
+    window.YMS_CONFIG.currentAmount = data.amount;
+
+    const d = new Date(data.fetchedAt);
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    window.YMS_CONFIG.currentAmountDateText =
+      `${d.getMonth() + 1}月${d.getDate()}日（${days[d.getDay()]}）` +
+      `${d.getHours()}時${String(d.getMinutes()).padStart(2, '0')}分 現在`;
+
+    applyProgress();
+  } catch {
+    // config.js の値をそのまま使用
+  }
 }
 
 // ── マイルストーン進捗 ─────────────────────────────
