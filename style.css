@@ -164,6 +164,18 @@ ul  { list-style: none; }
 
 .nav-links .nav-support-btn:hover { opacity: 0.85; }
 
+.nav-thanks-badge {
+  display:       inline-block;
+  padding:       7px 14px;
+  border-radius: 999px;
+  border:        1px solid var(--color-primary);
+  color:         var(--color-primary);
+  font-size:     0.78rem;
+  font-weight:   700;
+  white-space:   nowrap;
+  cursor:        default;
+}
+
 .nav-burger {
   display:         none;
   flex-direction:  column;
@@ -352,6 +364,21 @@ ul  { list-style: none; }
 .btn-hero:hover {
   transform:  translateY(-2px);
   box-shadow: 0 10px 40px rgba(255,93,174,0.7);
+}
+
+.btn-hero-thanks {
+  display:       inline-flex;
+  align-items:   center;
+  background:    rgba(255,93,174,0.1);
+  border:        2px solid var(--color-primary);
+  color:         var(--color-primary);
+  font-weight:   700;
+  font-size:     1rem;
+  padding:       14px 32px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  cursor:        default;
+  letter-spacing: 0.03em;
 }
 
 .hero-platform-note {

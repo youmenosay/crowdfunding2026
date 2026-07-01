@@ -203,6 +203,7 @@ function applyRewardImages() {
 
 // ── ソレオス 支援金額リアルタイム取得 ─────────────────
 async function fetchLiveAmount() {
+  if (window.YMS_CONFIG.cfEnded) return; // CF終了後はAPIフェッチをスキップ
   try {
     const res = await fetch('/api/amount');
     if (!res.ok) return;
@@ -245,7 +246,10 @@ function applyProgress() {
 
   const nextEl = document.getElementById('mpbNext');
   if (nextEl) {
-    if (current >= GOAL_TOTAL) {
+    if (window.YMS_CONFIG.cfEnded) {
+      nextEl.innerHTML = '💖 クラウドファンディングにご支援いただいた皆様、ありがとうございました！';
+      nextEl.className = 'mpb-next achieved';
+    } else if (current >= GOAL_TOTAL) {
       nextEl.textContent = '🎉 最終目標達成！ありがとうございます！';
       nextEl.className = 'mpb-next achieved';
     } else if (nextMs) {
@@ -608,7 +612,6 @@ function renderCard(card) {
       ${deliveryHtml}
       <div class="reward-card-actions">
         <a href="plan.html?id=${escHtml(card.id)}" class="btn-reward btn-detail" target="_blank">詳細を見る</a>
-        <a href="#" class="btn-reward soreos-link">ソレオスで支援する →</a>
       </div>
     </div>
   `;

@@ -4,13 +4,15 @@
 window.YMS_CONFIG = {
   version: '1.3.0',
 
+  cfEnded: true,
+
   soreosUrl: 'https://soreosu.com/projects/youmenosay',
 
   heroImageFile: 'hero-main.jpg',
 
   currentAmount: 556000,
-  currentAmountUpdatedAt: '2026-05-28',
-  currentAmountDateText: '5月28日（木）現在',
+  currentAmountUpdatedAt: '2026-07-01',
+  currentAmountDateText: '7月1日（火）最終集計',
 
   // ヒーロータイポグラフィ
   heroTypography: {
