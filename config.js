@@ -10,9 +10,9 @@ window.YMS_CONFIG = {
 
   heroImageFile: 'hero-main.jpg',
 
-  currentAmount: 556000,
-  currentAmountUpdatedAt: '2026-07-01',
-  currentAmountDateText: '7月1日（火）最終集計',
+  currentAmount: 3590000,
+  currentAmountUpdatedAt: '2026-06-30',
+  currentAmountDateText: '6月30日（火）最終集計',
 
   // ヒーロータイポグラフィ
   heroTypography: {
