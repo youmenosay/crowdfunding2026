@@ -126,8 +126,15 @@ function renderPlanDetail() {
        </div>`
     : '';
 
-  const soreosUrl = (window.YMS_CONFIG.soreosUrl) || '#';
-  const soreosAttr = soreosUrl === '#' ? ' aria-disabled="true" title="ソレオスのURLは近日公開予定です"' : '';
+  const cfEnded = !!window.YMS_CONFIG.cfEnded;
+
+  const ctaHtml = cfEnded
+    ? `<span class="btn btn-thanks btn-large">ご支援ありがとうございました</span>`
+    : (() => {
+        const soreosUrl = (window.YMS_CONFIG.soreosUrl) || '#';
+        const soreosAttr = soreosUrl === '#' ? ' aria-disabled="true" title="ソレオスのURLは近日公開予定です"' : '';
+        return `<a href="${esc(soreosUrl)}" class="btn btn-primary btn-large"${soreosAttr}>ソレオスで支援する →</a>`;
+      })();
 
   el.innerHTML = `
     <nav class="pd-breadcrumb" aria-label="パンくずリスト">
@@ -155,9 +162,7 @@ function renderPlanDetail() {
     ${noticesHtml}
 
     <div class="pd-cta">
-      <a href="${esc(soreosUrl)}" class="btn btn-primary btn-large"${soreosAttr}>
-        ソレオスで支援する →
-      </a>
+      ${ctaHtml}
       <a href="index.html#rewards" class="pd-btn-back">← リターン一覧へ戻る</a>
     </div>
   `;

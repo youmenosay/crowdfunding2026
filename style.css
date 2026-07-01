@@ -1178,6 +1178,13 @@ ul  { list-style: none; }
 
 .btn-large { padding: 14px 36px; font-size: 0.95rem; }
 
+.btn-thanks {
+  background: rgba(255,93,174,0.1);
+  border:     2px solid var(--color-primary);
+  color:      var(--color-primary);
+  cursor:     default;
+}
+
 /* リターン比較表 */
 .comparison-wrap { text-align: center; }
 
